@@ -134,7 +134,31 @@ async def handle_webhook(request: web.Request):
 async def healthcheck(request: web.Request):
     """Чтобы Render видел, что сервер жив"""
     return web.Response(text="Bot is running!")
+    
+# =========================
+# ФОНОВЫЕ ЗАДАЧИ
+# =========================
 
+async def heartbeat():
+    """Раз в 6 часов пишет админу: бот жив."""
+    while True:
+        await asyncio.sleep(6 * 60 * 60)
+        if ADMIN_CHAT_ID:
+            try:
+                await bot.send_message(ADMIN_CHAT_ID, "💚 Бот работает")
+            except Exception as e:
+                logger.warning(f"Heartbeat не отправлен: {e}")
+
+async def cleanup_carts():
+    """Раз в сутки чистит пустые корзины из памяти."""
+    while True:
+        await asyncio.sleep(24 * 60 * 60)
+        empty_ids = [uid for uid, cart in user_carts.items() if not cart]
+        for uid in empty_ids:
+            user_carts.pop(uid, None)
+        if empty_ids:
+            logger.info(f"🧹 Очищено {len(empty_ids)} пустых корзин")
+            
 async def on_startup(app: web.Application):
     """Действия при старте сервера"""
     # Render сам выдает URL сайта в переменную RENDER_EXTERNAL_URL
