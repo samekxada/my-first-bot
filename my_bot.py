@@ -22,7 +22,7 @@ if not TOKEN:
 try:
     ADMIN_CHAT_ID = int(os.getenv("ADMIN_CHAT_ID", "0"))
 except ValueError:
-    ADMIN_CHAT_ID = 8798573210
+    ADMIN_CHAT_ID = 0
 
 SUPPORT_PHONE = "+998 (90) 931-31-07"
 
@@ -58,24 +58,35 @@ TEXTS = {
         "combo": "📦 Комбо-наборы",
         "back": "🔙 Назад",
         "address": "📍 Демо-адрес: Ташкент, Мирабадский район, ориентир: Госпитальный рынок.",
+        
         "add_burger": "🍔 Добавить чизбургер",
         "add_chicken": "🍗 Добавить Шеф-Бургер",
         "add_cola": "🥤 Добавить Coca-Cola",
         "add_tea": "🍵 Добавить чай",
         "add_combo": "📦 Добавить Супер-комбо",
+        
         "cart": "🧺 Моя корзина",
         "clear_cart": "🗑 Очистить корзину",
         "order_btn": "🛒 Оформить заказ",
+        
         "cart_empty": "🧺 Ваша корзина пока пуста.",
         "cart_title": "🧺 ВАША КОРЗИНА:",
         "cart_total": "💰 Итого:",
+        "cart_hint": "\n💡 <i>(Нажимайте ➖ или ➕, чтобы изменить количество)</i>",
         "currency": "сум",
+        
         "phone_req": "📱 Для оформления заказа отправьте ваш номер телефона, нажав кнопку ниже:",
         "phone_btn": "📞 Отправить номер телефона",
         "phone_wrong": "❌ Пожалуйста, отправьте СВОЙ номер телефона — нажмите кнопку ниже.",
+        
+        "ask_comment": "✍️ Хотите добавить комментарий к заказу?\n\nНапишите его одним сообщением (например: <i>'без лука'</i> или <i>'позвонить за 5 минут'</i>), или нажмите кнопку ниже.",
+        "skip_btn": "⏩ Пропустить",
+        "comment_added": "✅ Комментарий добавлен. Отправляю заказ...",
+        
         "cart_cleared": "🗑 Корзина очищена.",
         "thanks": "✅ Спасибо! Ваш заказ принят.\n\n📞 Номер для связи: {}\n📞 Служба поддержки: {}",
         "thanks_warn": "✅ Ваш заказ принят.\n\n📞 Номер для связи: {}\n⚠️ Если с вами не свяжутся в течение 10 минут — позвоните: {}",
+        
         "burger_list": "🍔 НАШИ БУРГЕРЫ:\n\n• Чизбургер классический — 28 000 сум\n• Шеф-Бургер с курицей — 26 000 сум",
         "drink_list": "🥤 НАШИ НАПИТКИ:\n\n• Coca-Cola 0.5л — 7 000 сум\n• Чай чёрный / зелёный — 5 000 сум",
         "combo_list": "📦 НАШИ ТОПОВЫЕ КОМБО:\n\n🔥 СУПЕР-КОМБО №1\nСостав: Бургер, фри, Coca-Cola.\n💰 Цена: 45 000 сум"
@@ -91,24 +102,35 @@ TEXTS = {
         "combo": "📦 Kombo-to'plamlar",
         "back": "🔙 Orqaga",
         "address": "📍 Demo-manzil: Toshkent, Mirobod tumani, mo'ljal: Gospitalniy bozori.",
+        
         "add_burger": "🍔 Chizburger qo'shish",
         "add_chicken": "🍗 Shef-Burger qo'shish",
         "add_cola": "🥤 Coca-Cola qo'shish",
         "add_tea": "🍵 Choy qo'shish",
         "add_combo": "📦 Super-kombo qo'shish",
+        
         "cart": "🧺 Savatim",
         "clear_cart": "🗑 Savatni tozalash",
         "order_btn": "🛒 Buyurtma berish",
+        
         "cart_empty": "🧺 Savatingiz hozircha bo'sh.",
         "cart_title": "🧺 SAVATINGIZ:",
         "cart_total": "💰 Jami:",
+        "cart_hint": "\n💡 <i>(Miqdorni o'zgartirish uchun ➖ yoki ➕ tugmalarini bosing)</i>",
         "currency": "so'm",
+        
         "phone_req": "📱 Buyurtmani rasmiylashtirish uchun pastdagi tugmani bosib, telefon raqamingizni yuboring:",
         "phone_btn": "📞 Telefon raqamni yuborish",
         "phone_wrong": "❌ Iltimos, O'ZINGIZNING telefon raqamingizni yuboring — pastdagi tugmani bosing.",
+        
+        "ask_comment": "✍️ Buyurtmaga izoh qo'shmoqchimisiz?\n\nUni bitta xabar bilan yozing (masalan: <i>'piyozsiz'</i> yoki <i>'5 daqiqadan keyin qo'ng'iroq qiling'</i>), yoki pastdagi tugmani bosing.",
+        "skip_btn": "⏩ O'tkazib yuborish",
+        "comment_added": "✅ Izoh qo'shildi. Buyurtma yuborilmoqda...",
+        
         "cart_cleared": "🗑 Savat tozalandi.",
         "thanks": "✅ Rahmat! Buyurtmangiz qabul qilindi.\n\n📞 Aloqa raqamingiz: {}\n📞 Qo'llab-quvvatlash markazi: {}",
         "thanks_warn": "✅ Buyurtmangiz qabul qilindi.\n\n📞 Aloqa raqamingiz: {}\n⚠️ Agar 10 daqiqa ichida siz bilan bog'lanmasa — qo'ng'iroq qiling: {}",
+        
         "burger_list": "🍔 BIZNING BURGERLAR:\n\n• Klassik chizburger — 28 000 so'm\n• Tovuqli Shef-Burger — 26 000 so'm",
         "drink_list": "🥤 ICHIMLIKLAR:\n\n• Coca-Cola 0.5l — 7 000 so'm\n• Qora / Ko'k choy — 5 000 so'm",
         "combo_list": "📦 BIZNING TOP KOMBOLAR:\n\n🔥 SUPER-KOMBO №1\nTarkibi: Burger, fri, Coca-Cola.\n💰 Narxi: 45 000 so'm"
@@ -130,6 +152,9 @@ PRODUCTS = {
 user_languages = {}
 user_carts = {}
 processing_orders = set()
+
+# Временное хранилище заказов, ожидающих комментария
+pending_orders = {} 
 
 # =========================
 # ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
@@ -177,12 +202,67 @@ def build_cart_text(user_id):
     total = calculate_total(user_id)
     lines.append("")
     lines.append(f"{TEXTS[lang]['cart_total']} {total:,} {currency}")
+    
+    # Добавляем подсказку
+    lines.append(TEXTS[lang]["cart_hint"])
+    
     return "\n".join(lines)
 
 def build_phone_keyboard(lang):
     builder = ReplyKeyboardBuilder()
     builder.add(types.KeyboardButton(text=TEXTS[lang]["phone_btn"], request_contact=True))
     return builder.as_markup(resize_keyboard=True)
+
+# Новая функция для финальной отправки заказа (чтобы не дублировать код)
+async def send_final_order(user_id, lang, comment=None):
+    data = pending_orders.pop(user_id, None)
+    if not data:
+        return
+
+    phone = data["phone"]
+    currency = TEXTS[lang]["currency"]
+    
+    # Формируем текст заказа
+    order_text = ""
+    for product, quantity in data["cart"].items():
+        if product not in PRODUCTS:
+            continue
+        subtotal = PRODUCTS[product] * quantity
+        order_text += f"• {product} × {quantity} = {subtotal:,} {currency}\n"
+
+    comment_text = f"\n📝 <b>Комментарий:</b> {comment}\n" if comment else ""
+
+    admin_message = (
+        "🔔 НОВЫЙ ЗАКАЗ!\n---------------------------\n"
+        f"👤 Клиент: {data['first_name']}\n"
+        f"🔗 Telegram: {data['username']}\n"
+        f"📞 Телефон: {phone}\n"
+        "---------------------------\n🍔 ЗАКАЗ:\n"
+        f"{order_text}\n"
+        f"💰 ИТОГО: {data['total']:,} {currency}\n"
+        f"{comment_text}"
+        "---------------------------\n⚠️ Свяжитесь с клиентом для уточнения деталей."
+    )
+
+    admin_notified = False
+    if ADMIN_CHAT_ID:
+        try:
+            await bot.send_message(chat_id=ADMIN_CHAT_ID, text=admin_message, parse_mode="HTML")
+            admin_notified = True
+        except Exception as e:
+            logger.error(f"Ошибка отправки админу: {e}")
+            
+    thanks_key = "thanks" if admin_notified else "thanks_warn"
+    builder = ReplyKeyboardBuilder()
+    builder.add(types.KeyboardButton(text=TEXTS[lang]["back"]))
+
+    await bot.send_message(
+        chat_id=user_id,
+        text=TEXTS[lang][thanks_key].format(phone, SUPPORT_PHONE),
+        reply_markup=builder.as_markup(resize_keyboard=True)
+    )
+    
+    processing_orders.discard(user_id)
 
 # =========================
 # ХЕНДЛЕРЫ: МЕНЮ И КОРЗИНА
@@ -217,7 +297,7 @@ async def show_cart(message: types.Message):
     adjust_sizes = [2] * len(cart) + [1, 1, 1]
     builder.adjust(*adjust_sizes)
 
-    await message.answer(build_cart_text(user_id), reply_markup=builder.as_markup(resize_keyboard=True))
+    await message.answer(build_cart_text(user_id), reply_markup=builder.as_markup(resize_keyboard=True), parse_mode="HTML")
 
 # =========================
 # ХЕНДЛЕРЫ: КОМАНДЫ
@@ -253,17 +333,6 @@ async def cmd_help(message: types.Message):
         f"📞 Поддержка: {SUPPORT_PHONE}"
     )
     await message.answer(help_text, parse_mode="HTML")
-
-@dp.message(Command("test"))
-async def cmd_test(message: types.Message):
-    if not ADMIN_CHAT_ID:
-        await message.answer("❌ ADMIN_CHAT_ID не задан в переменных окружения (Environment Variables).")
-        return
-    try:
-        await bot.send_message(chat_id=ADMIN_CHAT_ID, text="🧪 ТЕСТ: связь с админом работает!")
-        await message.answer("✅ Тестовое сообщение отправлено. Проверь чат с ботом.")
-    except Exception as e:
-        await message.answer(f"❌ Ошибка: {e}\n\nСкорее всего, ты не нажимал /start у бота или ID неверный.")
 
 # =========================
 # ХЕНДЛЕРЫ: КАТЕГОРИИ
@@ -375,7 +444,7 @@ async def show_address(message: types.Message):
     await message.answer(TEXTS[lang]["address"])
 
 # =========================
-# ХЕНДЛЕРЫ: ОФОРМЛЕНИЕ ЗАКАЗА
+# ХЕНДЛЕРЫ: ОФОРМЛЕНИЕ ЗАКАЗА И КОММЕНТАРИЙ
 # =========================
 
 @dp.message(lambda msg: msg.text in ["🛒 Оформить заказ", "🛒 Buyurtma berish"])
@@ -396,7 +465,7 @@ async def handle_contact(message: types.Message):
         await message.answer(TEXTS[lang]["phone_wrong"], reply_markup=build_phone_keyboard(lang))
         return
 
-    if user_id in processing_orders:
+    if user_id in processing_orders or user_id in pending_orders:
         logger.info(f"Повторный контакт от {user_id} — игнорируем")
         return
 
@@ -405,50 +474,49 @@ async def handle_contact(message: types.Message):
         await message.answer(TEXTS[lang]["cart_empty"])
         return
 
+    # Сохраняем заказ во временное хранилище и очищаем корзину
     processing_orders.add(user_id)
+    pending_orders[user_id] = {
+        "phone": message.contact.phone_number,
+        "cart": cart.copy(),
+        "total": calculate_total(user_id),
+        "username": f"@{message.from_user.username}" if message.from_user.username else "Нет юзернейма",
+        "first_name": message.from_user.first_name
+    }
+    user_carts.pop(user_id, None)
 
-    try:
-        phone = message.contact.phone_number
-        currency = TEXTS[lang]["currency"]
-        username = f"@{message.from_user.username}" if message.from_user.username else "Нет юзернейма"
-        first_name = message.from_user.first_name
+    # Спрашиваем комментарий
+    builder = ReplyKeyboardBuilder()
+    builder.add(types.KeyboardButton(text=TEXTS[lang]["skip_btn"]))
+    
+    await message.answer(
+        TEXTS[lang]["ask_comment"], 
+        reply_markup=builder.as_markup(resize_keyboard=True),
+        parse_mode="HTML"
+    )
 
-        order_text = ""
-        for product, quantity in cart.items():
-            if product not in PRODUCTS:
-                continue
-            subtotal = PRODUCTS[product] * quantity
-            order_text += f"• {product} × {quantity} = {subtotal:,} {currency}\n"
+# Обработка кнопки "Пропустить"
+@dp.message(lambda msg: msg.text in ["⏩ Пропустить", "⏩ O'tkazib yuborish"])
+async def skip_comment(message: types.Message):
+    user_id = message.from_user.id
+    lang = get_lang(user_id)
+    
+    if user_id in pending_orders:
+        await send_final_order(user_id, lang, comment=None)
 
-        total = calculate_total(user_id)
+# Обработка текстового комментария
+@dp.message(lambda msg: msg.from_user.id in pending_orders and msg.text is not None)
+async def handle_comment(message: types.Message):
+    user_id = message.from_user.id
+    lang = get_lang(user_id)
+    comment = message.text.strip()
+    
+    await message.answer(TEXTS[lang]["comment_added"])
+    await send_final_order(user_id, lang, comment=comment)
 
-        admin_message = (
-            "🔔 НОВЫЙ ЗАКАЗ!\n---------------------------\n"
-            f"👤 Клиент: {first_name}\n🔗 Telegram: {username}\n📞 Телефон: {phone}\n"
-            "---------------------------\n🍔 ЗАКАЗ:\n"
-            f"{order_text}\n💰 ИТОГО: {total:,} {currency}\n"
-            "---------------------------\n⚠️ Свяжитесь с клиентом для уточнения деталей."
-        )
-
-        admin_notified = False
-        if ADMIN_CHAT_ID:
-            try:
-                await bot.send_message(chat_id=ADMIN_CHAT_ID, text=admin_message)
-                admin_notified = True
-            except Exception as e:
-                logger.error(f"Ошибка отправки админу: {e}")
-        else:
-            logger.warning("ADMIN_CHAT_ID не задан — заказ не отправлен")
-
-        thanks_key = "thanks" if admin_notified else "thanks_warn"
-        builder = ReplyKeyboardBuilder()
-        builder.add(types.KeyboardButton(text=TEXTS[lang]["back"]))
-
-        await message.answer(TEXTS[lang][thanks_key].format(phone, SUPPORT_PHONE), reply_markup=builder.as_markup(resize_keyboard=True))
-        user_carts.pop(user_id, None)
-
-    finally:
-        processing_orders.discard(user_id)
+# =========================
+# ОБЩИЕ ХЕНДЛЕРЫ
+# =========================
 
 @dp.message(lambda msg: msg.text in ["🔙 Назад", "🔙 Orqaga"])
 async def back_button(message: types.Message):
@@ -472,7 +540,6 @@ async def error_handler(event: types.ErrorEvent):
 # =========================
 
 async def heartbeat():
-    """Раз в 6 часов пишет админу: бот жив."""
     while True:
         await asyncio.sleep(6 * 60 * 60)
         if ADMIN_CHAT_ID:
@@ -482,7 +549,6 @@ async def heartbeat():
                 logger.warning(f"Heartbeat не отправлен: {e}")
 
 async def cleanup_carts():
-    """Раз в сутки чистит пустые корзины из памяти."""
     while True:
         await asyncio.sleep(24 * 60 * 60)
         empty_ids = [uid for uid, cart in user_carts.items() if not cart]
@@ -496,7 +562,6 @@ async def cleanup_carts():
 # =========================
 
 async def handle_webhook(request: web.Request):
-    """Обработчик входящих запросов от Telegram"""
     try:
         update_data = await request.json()
         update = types.Update(**update_data)
@@ -506,12 +571,9 @@ async def handle_webhook(request: web.Request):
     return web.Response(status=200)
 
 async def healthcheck(request: web.Request):
-    """Чтобы Render видел, что сервер жив"""
     return web.Response(text="Bot is running!")
 
 async def on_startup(app: web.Application):
-    """Действия при старте сервера на Render"""
-    # Получаем URL от Render или берем из .env (если тестируем локально)
     webhook_host = os.getenv("RENDER_EXTERNAL_URL") or os.getenv("WEBHOOK_HOST")
     
     if not webhook_host:
@@ -551,7 +613,6 @@ async def on_shutdown(app: web.Application):
 if __name__ == "__main__":
     logger.info("🚀 ЗАПУСК БОТА В РЕЖИМЕ WEBHOOK...")
     
-    # Render автоматически задает переменную PORT
     port = int(os.getenv("PORT", 8080))
 
     app = web.Application()
