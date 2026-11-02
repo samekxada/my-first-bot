@@ -15,12 +15,12 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 load_dotenv()
 
-TOKEN = os.getenv("BOT_TOKEN")
+TOKEN = os.getenv("8712149697:AAFFO_wsiGudKkacoyJeEMcvE_5mhUE1kHo")
 
 try:
-    ADMIN_CHAT_ID = int(os.getenv("ADMIN_CHAT_ID", "0"))
+    ADMIN_CHAT_ID = int(os.getenv("ADMIN_CHAT_ID", "8798573210"))
 except ValueError:
-    ADMIN_CHAT_ID = 0
+    ADMIN_CHAT_ID = 8798573210
 
 SUPPORT_PHONE = "+998 (90) 931-31-07"
 
