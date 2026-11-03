@@ -152,8 +152,6 @@ PRODUCTS = {
 user_languages = {}
 user_carts = {}
 processing_orders = set()
-
-# Временное хранилище заказов, ожидающих комментария
 pending_orders = {} 
 
 # =========================
@@ -202,8 +200,6 @@ def build_cart_text(user_id):
     total = calculate_total(user_id)
     lines.append("")
     lines.append(f"{TEXTS[lang]['cart_total']} {total:,} {currency}")
-    
-    # Добавляем подсказку
     lines.append(TEXTS[lang]["cart_hint"])
     
     return "\n".join(lines)
@@ -213,7 +209,6 @@ def build_phone_keyboard(lang):
     builder.add(types.KeyboardButton(text=TEXTS[lang]["phone_btn"], request_contact=True))
     return builder.as_markup(resize_keyboard=True)
 
-# Новая функция для финальной отправки заказа (чтобы не дублировать код)
 async def send_final_order(user_id, lang, comment=None):
     data = pending_orders.pop(user_id, None)
     if not data:
@@ -222,7 +217,6 @@ async def send_final_order(user_id, lang, comment=None):
     phone = data["phone"]
     currency = TEXTS[lang]["currency"]
     
-    # Формируем текст заказа
     order_text = ""
     for product, quantity in data["cart"].items():
         if product not in PRODUCTS:
@@ -474,7 +468,6 @@ async def handle_contact(message: types.Message):
         await message.answer(TEXTS[lang]["cart_empty"])
         return
 
-    # Сохраняем заказ во временное хранилище и очищаем корзину
     processing_orders.add(user_id)
     pending_orders[user_id] = {
         "phone": message.contact.phone_number,
@@ -485,7 +478,6 @@ async def handle_contact(message: types.Message):
     }
     user_carts.pop(user_id, None)
 
-    # Спрашиваем комментарий
     builder = ReplyKeyboardBuilder()
     builder.add(types.KeyboardButton(text=TEXTS[lang]["skip_btn"]))
     
@@ -495,16 +487,13 @@ async def handle_contact(message: types.Message):
         parse_mode="HTML"
     )
 
-# Обработка кнопки "Пропустить"
 @dp.message(lambda msg: msg.text in ["⏩ Пропустить", "⏩ O'tkazib yuborish"])
 async def skip_comment(message: types.Message):
     user_id = message.from_user.id
     lang = get_lang(user_id)
-    
     if user_id in pending_orders:
         await send_final_order(user_id, lang, comment=None)
 
-# Обработка текстового комментария
 @dp.message(lambda msg: msg.from_user.id in pending_orders and msg.text is not None)
 async def handle_comment(message: types.Message):
     user_id = message.from_user.id
@@ -558,7 +547,7 @@ async def cleanup_carts():
             logger.info(f"🧹 Очищено {len(empty_ids)} пустых корзин")
 
 # =========================
-# WEBHOOK (ДЛЯ RENDER)
+# WEBHOOK И HEALTHCHECK (ДЛЯ RENDER)
 # =========================
 
 async def handle_webhook(request: web.Request):
@@ -570,6 +559,7 @@ async def handle_webhook(request: web.Request):
         logger.error(f"Ошибка обработки вебхука: {e}")
     return web.Response(status=200)
 
+# ВОТ ОНА, ТА САМАЯ ФУНКЦИЯ, КОТОРАЯ ЧИНИТ 404 ОШИБКУ
 async def healthcheck(request: web.Request):
     return web.Response(text="Bot is running!")
 
@@ -616,7 +606,11 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", 8080))
 
     app = web.Application()
+    
+    # Обработчик для Telegram
     app.router.add_post(f"/webhook/{TOKEN}", handle_webhook)
+    
+    # Обработчик для главной страницы (UptimeRobot)
     app.router.add_get("/", healthcheck)
 
     app.on_startup.append(on_startup)
