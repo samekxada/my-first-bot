@@ -258,7 +258,7 @@ async def send_final_order(user_id, lang, comment=None):
     processing_orders.discard(user_id)
 
 # =========================
-# ХЕНДЛЕРЫ: МЕНЮ И КОРЗИНА
+# ХЕНДЛЕРЫ
 # =========================
 
 async def show_main_menu(message: types.Message):
@@ -292,10 +292,6 @@ async def show_cart(message: types.Message):
 
     await message.answer(build_cart_text(user_id), reply_markup=builder.as_markup(resize_keyboard=True), parse_mode="HTML")
 
-# =========================
-# ХЕНДЛЕРЫ: КОМАНДЫ
-# =========================
-
 @dp.message(CommandStart())
 @dp.message(lambda msg: msg.text == "🌐 Сменить язык / Tilni o'zgartirish")
 async def choose_language(message: types.Message):
@@ -326,10 +322,6 @@ async def cmd_help(message: types.Message):
         f"📞 Поддержка: {SUPPORT_PHONE}"
     )
     await message.answer(help_text, parse_mode="HTML")
-
-# =========================
-# ХЕНДЛЕРЫ: КАТЕГОРИИ
-# =========================
 
 @dp.message(lambda msg: msg.text in ["🍔 Посмотреть Меню", "🍔 Menyuni ko'rish"])
 async def menu_categories(message: types.Message):
@@ -374,10 +366,6 @@ async def combo_menu(message: types.Message):
     builder.adjust(2)
     await message.answer(TEXTS[lang]["combo_list"], reply_markup=builder.as_markup(resize_keyboard=True))
 
-# =========================
-# ХЕНДЛЕРЫ: ДОБАВЛЕНИЕ ТОВАРОВ
-# =========================
-
 @dp.message(lambda msg: msg.text in ["🍔 Добавить чизбургер", "🍔 Chizburger qo'shish"])
 async def add_cheeseburger(message: types.Message):
     add_to_cart(message.from_user.id, "Чизбургер")
@@ -402,10 +390,6 @@ async def add_tea(message: types.Message):
 async def add_combo(message: types.Message):
     add_to_cart(message.from_user.id, "Супер-комбо")
     await message.answer("✅ Супер-комбо добавлено в корзину!")
-
-# =========================
-# ХЕНДЛЕРЫ: ИЗМЕНЕНИЕ КОРЗИНЫ
-# =========================
 
 @dp.message(lambda msg: msg.text in ["🧺 Моя корзина", "🧺 Savatim"])
 async def open_cart(message: types.Message):
@@ -435,10 +419,6 @@ async def clear_cart(message: types.Message):
 async def show_address(message: types.Message):
     lang = get_lang(message.from_user.id)
     await message.answer(TEXTS[lang]["address"])
-
-# =========================
-# ХЕНДЛЕРЫ: ОФОРМЛЕНИЕ ЗАКАЗА
-# =========================
 
 @dp.message(lambda msg: msg.text in ["🛒 Оформить заказ", "🛒 Buyurtma berish"])
 async def request_phone(message: types.Message):
@@ -489,19 +469,17 @@ async def handle_contact(message: types.Message):
 @dp.message(lambda msg: msg.text in ["⏩ Пропустить", "⏩ O'tkazib yuborish"])
 async def skip_comment(message: types.Message):
     user_id = message.from_user.id
+    lang = get_lang(user_id)
     if user_id in pending_orders:
-        await send_final_order(user_id, get_lang(user_id), comment=None)
+        await send_final_order(user_id, lang, comment=None)
 
 @dp.message(lambda msg: msg.from_user.id in pending_orders and msg.text is not None)
 async def handle_comment(message: types.Message):
     user_id = message.from_user.id
     lang = get_lang(user_id)
+    comment = message.text.strip()
     await message.answer(TEXTS[lang]["comment_added"])
-    await send_final_order(user_id, lang, comment=message.text.strip())
-
-# =========================
-# ОБЩИЕ ХЕНДЛЕРЫ
-# =========================
+    await send_final_order(user_id, lang, comment=comment)
 
 @dp.message(lambda msg: msg.text in ["🔙 Назад", "🔙 Orqaga"])
 async def back_button(message: types.Message):
@@ -516,7 +494,7 @@ async def error_handler(event: types.ErrorEvent):
     logger.error(f"Необработанная ошибка: {event.exception}", exc_info=event.exception)
 
 # =========================
-# WEBHOOK И HEALTHCHECK (ДЛЯ FLY.IO)
+# WEBHOOK И HEALTHCHECK (ДЛЯ RENDER)
 # =========================
 
 async def handle_webhook(request: web.Request):
@@ -533,7 +511,7 @@ async def healthcheck(request: web.Request):
 
 async def heartbeat():
     while True:
-        await asyncio.sleep(3600)
+        await asyncio.sleep(3600) # каждый час
         if ADMIN_CHAT_ID:
             try:
                 await bot.send_message(ADMIN_CHAT_ID, "💚 Бот работает")
@@ -541,9 +519,11 @@ async def heartbeat():
                 pass
 
 async def on_startup(app: web.Application):
-    webhook_host = os.getenv("WEBHOOK_HOST")
+    # ВАЖНО: Render автоматически подставляет сюда ссылку!
+    webhook_host = os.getenv("RENDER_EXTERNAL_URL") or os.getenv("WEBHOOK_HOST")
+    
     if not webhook_host:
-        logger.error("❌ WEBHOOK_HOST не задан!")
+        logger.error("❌ URL для вебхука не задан!")
         return
         
     webhook_url = f"{webhook_host}/webhook/{TOKEN}"
@@ -555,14 +535,16 @@ async def on_startup(app: web.Application):
             types.BotCommand(command="cart", description="🧺 Моя корзина"),
             types.BotCommand(command="help", description="ℹ️ Помощь"),
         ])
-        await bot.set_webhook(webhook_url, drop_pending_updates=True)
+        # Сбрасываем старые очереди и ставим новый вебхук
+        await bot.delete_webhook(drop_pending_updates=True)
+        await bot.set_webhook(webhook_url)
         asyncio.create_task(heartbeat())
     except Exception as e:
         logger.error(f"Ошибка при старте: {e}")
 
 async def on_shutdown(app: web.Application):
     logger.info("🛑 Выключение бота...")
-    await bot.delete_webhook()
+    # ВАЖНО: Мы больше НЕ удаляем вебхук при выключении, чтобы Telegram не терял связь!
     await bot.session.close()
 
 # =========================
