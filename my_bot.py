@@ -43,7 +43,6 @@ dp = Dispatcher()
 # =========================
 # ТЕКСТЫ
 # =========================
-
 TEXTS = {
     "ru": {
         "welcome": "Выберите действие:",
@@ -56,35 +55,28 @@ TEXTS = {
         "combo": "📦 Комбо-наборы",
         "back": "🔙 Назад",
         "address": "📍 Демо-адрес: Ташкент, Мирабадский район, ориентир: Госпитальный рынок.",
-        
         "add_burger": "🍔 Добавить чизбургер",
         "add_chicken": "🍗 Добавить Шеф-Бургер",
         "add_cola": "🥤 Добавить Coca-Cola",
         "add_tea": "🍵 Добавить чай",
         "add_combo": "📦 Добавить Супер-комбо",
-        
         "cart": "🧺 Моя корзина",
         "clear_cart": "🗑 Очистить корзину",
         "order_btn": "🛒 Оформить заказ",
-        
         "cart_empty": "🧺 Ваша корзина пока пуста.",
         "cart_title": "🧺 ВАША КОРЗИНА:",
         "cart_total": "💰 Итого:",
         "cart_hint": "\n💡 <i>(Нажимайте ➖ или ➕, чтобы изменить количество)</i>",
         "currency": "сум",
-        
         "phone_req": "📱 Для оформления заказа отправьте ваш номер телефона, нажав кнопку ниже:",
         "phone_btn": "📞 Отправить номер телефона",
         "phone_wrong": "❌ Пожалуйста, отправьте СВОЙ номер телефона — нажмите кнопку ниже.",
-        
         "ask_comment": "✍️ Хотите добавить комментарий к заказу?\n\nНапишите его одним сообщением (например: <i>'без лука'</i> или <i>'позвонить за 5 минут'</i>), или нажмите кнопку ниже.",
         "skip_btn": "⏩ Пропустить",
         "comment_added": "✅ Комментарий добавлен. Отправляю заказ...",
-        
         "cart_cleared": "🗑 Корзина очищена.",
         "thanks": "✅ Спасибо! Ваш заказ принят.\n\n📞 Номер для связи: {}\n📞 Служба поддержки: {}",
         "thanks_warn": "✅ Ваш заказ принят.\n\n📞 Номер для связи: {}\n⚠️ Если с вами не свяжутся в течение 10 минут — позвоните: {}",
-        
         "burger_list": "🍔 НАШИ БУРГЕРЫ:\n\n• Чизбургер классический — 28 000 сум\n• Шеф-Бургер с курицей — 26 000 сум",
         "drink_list": "🥤 НАШИ НАПИТКИ:\n\n• Coca-Cola 0.5л — 7 000 сум\n• Чай чёрный / зелёный — 5 000 сум",
         "combo_list": "📦 НАШИ ТОПОВЫЕ КОМБО:\n\n🔥 СУПЕР-КОМБО №1\nСостав: Бургер, фри, Coca-Cola.\n💰 Цена: 45 000 сум"
@@ -100,35 +92,28 @@ TEXTS = {
         "combo": "📦 Kombo-to'plamlar",
         "back": "🔙 Orqaga",
         "address": "📍 Demo-manzil: Toshkent, Mirobod tumani, mo'ljal: Gospitalniy bozori.",
-        
         "add_burger": "🍔 Chizburger qo'shish",
         "add_chicken": "🍗 Shef-Burger qo'shish",
         "add_cola": "🥤 Coca-Cola qo'shish",
         "add_tea": "🍵 Choy qo'shish",
         "add_combo": "📦 Super-kombo qo'shish",
-        
         "cart": "🧺 Savatim",
         "clear_cart": "🗑 Savatni tozalash",
         "order_btn": "🛒 Buyurtma berish",
-        
         "cart_empty": "🧺 Savatingiz hozircha bo'sh.",
         "cart_title": "🧺 SAVATINGIZ:",
         "cart_total": "💰 Jami:",
         "cart_hint": "\n💡 <i>(Miqdorni o'zgartirish uchun ➖ yoki ➕ tugmalarini bosing)</i>",
         "currency": "so'm",
-        
         "phone_req": "📱 Buyurtmani rasmiylashtirish uchun pastdagi tugmani bosib, telefon raqamingizni yuboring:",
         "phone_btn": "📞 Telefon raqamni yuborish",
         "phone_wrong": "❌ Iltimos, O'ZINGIZNING telefon raqamingizni yuboring — pastdagi tugmani bosing.",
-        
         "ask_comment": "✍️ Buyurtmaga izoh qo'shmoqchimisiz?\n\nUni bitta xabar bilan yozing (masalan: <i>'piyozsiz'</i> yoki <i>'5 daqiqadan keyin qo'ng'iroq qiling'</i>), yoki pastdagi tugmani bosing.",
         "skip_btn": "⏩ O'tkazib yuborish",
         "comment_added": "✅ Izoh qo'shildi. Buyurtma yuborilmoqda...",
-        
         "cart_cleared": "🗑 Savat tozalandi.",
         "thanks": "✅ Rahmat! Buyurtmangiz qabul qilindi.\n\n📞 Aloqa raqamingiz: {}\n📞 Qo'llab-quvvatlash markazi: {}",
         "thanks_warn": "✅ Buyurtmangiz qabul qilindi.\n\n📞 Aloqa raqamingiz: {}\n⚠️ Agar 10 daqiqa ichida siz bilan bog'lanmasa — qo'ng'iroq qiling: {}",
-        
         "burger_list": "🍔 BIZNING BURGERLAR:\n\n• Klassik chizburger — 28 000 so'm\n• Tovuqli Shef-Burger — 26 000 so'm",
         "drink_list": "🥤 ICHIMLIKLAR:\n\n• Coca-Cola 0.5l — 7 000 so'm\n• Qora / Ko'k choy — 5 000 so'm",
         "combo_list": "📦 BIZNING TOP KOMBOLAR:\n\n🔥 SUPER-KOMBO №1\nTarkibi: Burger, fri, Coca-Cola.\n💰 Narxi: 45 000 so'm"
@@ -138,7 +123,6 @@ TEXTS = {
 # =========================
 # ТОВАРЫ И ДАННЫЕ
 # =========================
-
 PRODUCTS = {
     "Чизбургер": 28000,
     "Шеф-Бургер": 26000,
@@ -155,7 +139,6 @@ pending_orders = {}
 # =========================
 # ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
 # =========================
-
 def get_lang(user_id):
     return user_languages.get(user_id, "ru")
 
@@ -260,7 +243,6 @@ async def send_final_order(user_id, lang, comment=None):
 # =========================
 # ХЕНДЛЕРЫ
 # =========================
-
 async def show_main_menu(message: types.Message):
     lang = get_lang(message.from_user.id)
     builder = ReplyKeyboardBuilder()
@@ -506,12 +488,13 @@ async def handle_webhook(request: web.Request):
         logger.error(f"Ошибка обработки вебхука: {e}")
     return web.Response(status=200)
 
+# ВОТ ЗДЕСЬ ТА САМАЯ ФУНКЦИЯ, КОТОРАЯ УБИРАЕТ 404
 async def healthcheck(request: web.Request):
     return web.Response(text="Bot is running!")
 
 async def heartbeat():
     while True:
-        await asyncio.sleep(3600) # каждый час
+        await asyncio.sleep(3600)
         if ADMIN_CHAT_ID:
             try:
                 await bot.send_message(ADMIN_CHAT_ID, "💚 Бот работает")
@@ -519,11 +502,11 @@ async def heartbeat():
                 pass
 
 async def on_startup(app: web.Application):
-    # ВАЖНО: Render автоматически подставляет сюда ссылку!
+    # Render сам подставляет сюда ссылку
     webhook_host = os.getenv("RENDER_EXTERNAL_URL") or os.getenv("WEBHOOK_HOST")
     
     if not webhook_host:
-        logger.error("❌ URL для вебхука не задан!")
+        logger.error("❌ URL для вебхука не задан! Добавь WEBHOOK_HOST.")
         return
         
     webhook_url = f"{webhook_host}/webhook/{TOKEN}"
@@ -535,7 +518,6 @@ async def on_startup(app: web.Application):
             types.BotCommand(command="cart", description="🧺 Моя корзина"),
             types.BotCommand(command="help", description="ℹ️ Помощь"),
         ])
-        # Сбрасываем старые очереди и ставим новый вебхук
         await bot.delete_webhook(drop_pending_updates=True)
         await bot.set_webhook(webhook_url)
         asyncio.create_task(heartbeat())
@@ -544,7 +526,6 @@ async def on_startup(app: web.Application):
 
 async def on_shutdown(app: web.Application):
     logger.info("🛑 Выключение бота...")
-    # ВАЖНО: Мы больше НЕ удаляем вебхук при выключении, чтобы Telegram не терял связь!
     await bot.session.close()
 
 # =========================
@@ -557,8 +538,9 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", 8080))
     app = web.Application()
     
+    # Регистрация путей
     app.router.add_post(f"/webhook/{TOKEN}", handle_webhook)
-    app.router.add_get("/", healthcheck)
+    app.router.add_get("/", healthcheck)  # <--- ИМЕННО ЭТА СТРОКА ОТВЕЧАЕТ ЗА ГЛАВНУЮ СТРАНИЦУ
 
     app.on_startup.append(on_startup)
     app.on_shutdown.append(on_shutdown)
