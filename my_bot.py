@@ -488,7 +488,6 @@ async def handle_webhook(request: web.Request):
         logger.error(f"Ошибка обработки вебхука: {e}")
     return web.Response(status=200)
 
-# ВОТ ЗДЕСЬ ТА САМАЯ ФУНКЦИЯ, КОТОРАЯ УБИРАЕТ 404
 async def healthcheck(request: web.Request):
     return web.Response(text="Bot is running!")
 
@@ -502,9 +501,7 @@ async def heartbeat():
                 pass
 
 async def on_startup(app: web.Application):
-    # Render сам подставляет сюда ссылку
     webhook_host = os.getenv("RENDER_EXTERNAL_URL") or os.getenv("WEBHOOK_HOST")
-    
     if not webhook_host:
         logger.error("❌ URL для вебхука не задан! Добавь WEBHOOK_HOST.")
         return
@@ -538,9 +535,11 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", 8080))
     app = web.Application()
     
-    # Регистрация путей
     app.router.add_post(f"/webhook/{TOKEN}", handle_webhook)
-    app.router.add_get("/", healthcheck)  # <--- ИМЕННО ЭТА СТРОКА ОТВЕЧАЕТ ЗА ГЛАВНУЮ СТРАНИЦУ
+    
+    # Добавили обработку для Render и для UptimeRobot
+    app.router.add_get("/healthz", healthcheck) 
+    app.router.add_get("/", healthcheck)
 
     app.on_startup.append(on_startup)
     app.on_shutdown.append(on_shutdown)
