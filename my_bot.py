@@ -103,23 +103,55 @@ TEXTS = {
 }
 
 # =========================
-# ТОВАРЫ И ИХ ФОТО (ВСТАВЬ СВОИ ССЫЛКИ)
+# КАТЕГОРИИ
 # =========================
-# Я поставил красивые картинки из интернета для примера.
-# Когда будешь сдавать клиенту, просто замени ссылки на фото его блюд!
-
-PRODUCTS = {
-    "Чизбургер": {"price": 28000, "cat": "burgers", "photo": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=800&auto=format&fit=crop"},
-    "Шеф-Бургер": {"price": 26000, "cat": "burgers", "photo": "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=800&auto=format&fit=crop"},
-    "Coca-Cola": {"price": 7000, "cat": "drinks", "photo": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=800&auto=format&fit=crop"},
-    "Чай": {"price": 5000, "cat": "drinks", "photo": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?q=80&w=800&auto=format&fit=crop"},
-    "Супер-комбо": {"price": 45000, "cat": "combo", "photo": "https://images.unsplash.com/photo-1610614819513-58e34989848b?q=80&w=800&auto=format&fit=crop"}
-}
 
 CATEGORIES = {
     "burgers": {"ru": "🍔 Бургеры", "uz": "🍔 Burgerlar"},
+    "lavash": {"ru": "🌯 Лаваши", "uz": "🌯 Lavashlar"},
+    "snacks": {"ru": "🍟 Закуски", "uz": "🍟 Gazaklar"},
     "drinks": {"ru": "🥤 Напитки", "uz": "🥤 Ichimliklar"},
+    "sauces": {"ru": "🧂 Соусы", "uz": "🧂 Souslar"},
     "combo": {"ru": "📦 Комбо", "uz": "📦 Kombo"}
+}
+
+# =========================
+# ТОВАРЫ (ЦЕНЫ И ФОТО)
+# =========================
+
+PRODUCTS = {
+    # --- БУРГЕРЫ ---
+    "Чизбургер": {"price": 28000, "cat": "burgers", "photo": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=800&auto=format&fit=crop"},
+    "Шеф-Бургер": {"price": 26000, "cat": "burgers", "photo": "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=800&auto=format&fit=crop"},
+    "Двойной чизбургер": {"price": 38000, "cat": "burgers", "photo": "https://images.unsplash.com/photo-1586816001966-79b736744398?q=80&w=800&auto=format&fit=crop"},
+    "Двойной Шеф-Бургер": {"price": 36000, "cat": "burgers", "photo": "https://images.unsplash.com/photo-1594212844822-18d2b66e3724?q=80&w=800&auto=format&fit=crop"},
+
+    # --- ЛАВАШИ ---
+    "Лаваш обычный": {"price": 25000, "cat": "lavash", "photo": "https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=800&auto=format&fit=crop"},
+    "Лаваш сырный": {"price": 30000, "cat": "lavash", "photo": "https://images.unsplash.com/photo-1604868189265-38f2854b6e48?q=80&w=800&auto=format&fit=crop"},
+
+    # --- ЗАКУСКИ ---
+    "Картошка фри (средняя)": {"price": 15000, "cat": "snacks", "photo": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=800&auto=format&fit=crop"},
+    "Картошка фри (большая)": {"price": 20000, "cat": "snacks", "photo": "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?q=80&w=800&auto=format&fit=crop"},
+    "Наггетсы (6 шт)": {"price": 18000, "cat": "snacks", "photo": "https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=800&auto=format&fit=crop"},
+
+    # --- НАПИТКИ ---
+    "Coca-Cola 0.5": {"price": 7000, "cat": "drinks", "photo": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=800&auto=format&fit=crop"},
+    "Pepsi 0.5": {"price": 7000, "cat": "drinks", "photo": "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?q=80&w=800&auto=format&fit=crop"},
+    "Fanta 0.5": {"price": 7000, "cat": "drinks", "photo": "https://images.unsplash.com/photo-1624517452488-04869289c4ca?q=80&w=800&auto=format&fit=crop"},
+    "Lipton 0.5": {"price": 8000, "cat": "drinks", "photo": "https://images.unsplash.com/photo-1556881286-fc6915169721?q=80&w=800&auto=format&fit=crop"},
+    "Сок (0.2)": {"price": 10000, "cat": "drinks", "photo": "https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=800&auto=format&fit=crop"},
+    "Чай": {"price": 5000, "cat": "drinks", "photo": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?q=80&w=800&auto=format&fit=crop"},
+
+    # --- СОУСЫ ---
+    "Соус сырный": {"price": 3000, "cat": "sauces", "photo": "https://images.unsplash.com/photo-1619860860774-1e2e17343432?q=80&w=800&auto=format&fit=crop"},
+    "Соус чесночный": {"price": 3000, "cat": "sauces", "photo": "https://images.unsplash.com/photo-1599321955726-e04842f9159f?q=80&w=800&auto=format&fit=crop"},
+    "Кетчуп": {"price": 2000, "cat": "sauces", "photo": "https://images.unsplash.com/photo-1607013251379-e6eecfffe234?q=80&w=800&auto=format&fit=crop"},
+
+    # --- КОМБО ---
+    "Супер-комбо": {"price": 45000, "cat": "combo", "photo": "https://images.unsplash.com/photo-1610614819513-58e34989848b?q=80&w=800&auto=format&fit=crop"},
+    "Узбекский пир": {"price": 75000, "cat": "combo", "photo": "https://images.unsplash.com/photo-1610440042657-612c34d95e9f?q=80&w=800&auto=format&fit=crop"},
+    "Друзья навсегда": {"price": 199000, "cat": "combo", "photo": "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=800&auto=format&fit=crop"}
 }
 
 user_languages = {}
@@ -304,21 +336,20 @@ async def show_categories(message: types.Message):
     lang = get_lang(message.from_user.id)
     builder = InlineKeyboardBuilder()
     
-    # Добавляем кнопки категорий
-    builder.button(text=CATEGORIES["burgers"][lang], callback_data="cat_burgers")
-    builder.button(text=CATEGORIES["drinks"][lang], callback_data="cat_drinks")
-    builder.button(text=CATEGORIES["combo"][lang], callback_data="cat_combo")
-    builder.adjust(2, 1) # 2 кнопки в ряд, 1 снизу
+    # Добавляем кнопки всех 6 категорий
+    for cat_id, cat_names in CATEGORIES.items():
+        builder.button(text=cat_names[lang], callback_data=f"cat_{cat_id}")
+    
+    builder.adjust(2) # По 2 кнопки в ряд
     
     await message.answer(TEXTS[lang]["select_cat"], reply_markup=builder.as_markup())
 
 @dp.callback_query(lambda c: c.data.startswith("cat_"))
 async def show_category_items(callback: types.CallbackQuery):
-    await callback.answer() # Убираем часики на кнопке
+    await callback.answer() 
     cat_id = callback.data.split("_")[1]
     lang = get_lang(callback.from_user.id)
     
-    # Берем первый товар из категории, чтобы показать карточку
     items = [k for k, v in PRODUCTS.items() if v["cat"] == cat_id]
     if not items:
         return
@@ -329,25 +360,21 @@ async def show_item_card(message: types.Message, product_name: str, lang: str, c
     product = PRODUCTS[product_name]
     currency = TEXTS[lang]["currency"]
     
-    # Получаем все товары этой категории для кнопок
     items = [k for k, v in PRODUCTS.items() if v["cat"] == cat_id]
     
     builder = InlineKeyboardBuilder()
     for item in items:
         price = PRODUCTS[item]["price"]
-        # Если товар уже в корзине, показываем это
         builder.button(text=f"➕ {item} | {price:,} {currency}", callback_data=f"add_{item}")
     
     builder.button(text=TEXTS[lang]["back"], callback_data="back_to_cats")
     builder.adjust(1) # Кнопки добавления в столбик
     
     caption = (
-        f"<b>{product_name}</b>\n"
-        f"💰 Цена: {product['price']:,} {currency}\n\n"
-        f"Нажмите на кнопку ниже, чтобы добавить в корзину:"
+        f"<b>{CATEGORIES[cat_id][lang]}</b>\n\n"
+        f"Выберите товар, чтобы добавить его в корзину:"
     )
     
-    # Отправляем фото с кнопками
     try:
         await message.answer_photo(
             photo=product["photo"],
@@ -355,32 +382,33 @@ async def show_item_card(message: types.Message, product_name: str, lang: str, c
             reply_markup=builder.as_markup(),
             parse_mode="HTML"
         )
-    except Exception as e:
-        # Если фото не загрузилось, отправляем текстом
+    except Exception:
         await message.answer(caption, reply_markup=builder.as_markup(), parse_mode="HTML")
 
 @dp.callback_query(lambda c: c.data == "back_to_cats")
 async def back_to_cats(callback: types.CallbackQuery):
     await callback.answer()
-    await callback.message.delete() # Удаляем фото
+    try:
+        await callback.message.delete()
+    except Exception:
+        pass
+    
     lang = get_lang(callback.from_user.id)
     builder = InlineKeyboardBuilder()
-    builder.button(text=CATEGORIES["burgers"][lang], callback_data="cat_burgers")
-    builder.button(text=CATEGORIES["drinks"][lang], callback_data="cat_drinks")
-    builder.button(text=CATEGORIES["combo"][lang], callback_data="cat_combo")
-    builder.adjust(2, 1)
+    for cat_id, cat_names in CATEGORIES.items():
+        builder.button(text=cat_names[lang], callback_data=f"cat_{cat_id}")
+    builder.adjust(2)
+    
     await callback.message.answer(TEXTS[lang]["select_cat"], reply_markup=builder.as_markup())
 
 @dp.callback_query(lambda c: c.data.startswith("add_"))
 async def add_item_inline(callback: types.CallbackQuery):
-    product_name = callback.data[4:] # отрезаем "add_"
+    product_name = callback.data[4:]
     user_id = callback.from_user.id
-    lang = get_lang(user_id)
     
     if product_name in PRODUCTS:
         add_to_cart(user_id, product_name)
-        # Показываем всплывающее окошко, что добавлено
-        await callback.answer(f"✅ {product_name} добавлен!", show_alert=False)
+        await callback.answer(f"✅ {product_name} добавлен в корзину!", show_alert=False)
     else:
         await callback.answer("Ошибка", show_alert=True)
 
