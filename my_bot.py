@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from aiohttp import web
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart, Command
-from aiogram.utils.keyboard import ReplyKeyboardBuilder
+from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
 # =========================
 # НАСТРОЙКИ
@@ -16,7 +16,7 @@ load_dotenv()
 
 TOKEN = os.getenv("BOT_TOKEN")
 if not TOKEN:
-    raise RuntimeError("❌ BOT_TOKEN не найден в переменных окружения!")
+    raise RuntimeError("❌ BOT_TOKEN не найден!")
 
 try:
     ADMIN_CHAT_ID = int(os.getenv("ADMIN_CHAT_ID", "0"))
@@ -31,10 +31,7 @@ MINUS_PREFIX = "➖ "
 # ЛОГГИРОВАНИЕ И БОТ
 # =========================
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
 logger = logging.getLogger(__name__)
 
 bot = Bot(token=TOKEN)
@@ -43,6 +40,7 @@ dp = Dispatcher()
 # =========================
 # ТЕКСТЫ
 # =========================
+
 TEXTS = {
     "ru": {
         "welcome": "Выберите действие:",
@@ -50,16 +48,9 @@ TEXTS = {
         "addr_btn": "📍 Узнать Адрес",
         "lang_btn": "🌐 Сменить язык / Tilni o'zgartirish",
         "select_cat": "📋 Выберите интересующий вас раздел меню:",
-        "burgers": "🍔 Бургеры",
-        "drinks": "🥤 Напитки",
-        "combo": "📦 Комбо-наборы",
         "back": "🔙 Назад",
         "address": "📍 Демо-адрес: Ташкент, Мирабадский район, ориентир: Госпитальный рынок.",
-        "add_burger": "🍔 Добавить чизбургер",
-        "add_chicken": "🍗 Добавить Шеф-Бургер",
-        "add_cola": "🥤 Добавить Coca-Cola",
-        "add_tea": "🍵 Добавить чай",
-        "add_combo": "📦 Добавить Супер-комбо",
+        
         "cart": "🧺 Моя корзина",
         "clear_cart": "🗑 Очистить корзину",
         "order_btn": "🛒 Оформить заказ",
@@ -68,18 +59,17 @@ TEXTS = {
         "cart_total": "💰 Итого:",
         "cart_hint": "\n💡 <i>(Нажимайте ➖ или ➕, чтобы изменить количество)</i>",
         "currency": "сум",
+        
         "phone_req": "📱 Для оформления заказа отправьте ваш номер телефона, нажав кнопку ниже:",
         "phone_btn": "📞 Отправить номер телефона",
         "phone_wrong": "❌ Пожалуйста, отправьте СВОЙ номер телефона — нажмите кнопку ниже.",
-        "ask_comment": "✍️ Хотите добавить комментарий к заказу?\n\nНапишите его одним сообщением (например: <i>'без лука'</i> или <i>'позвонить за 5 минут'</i>), или нажмите кнопку ниже.",
+        
+        "ask_comment": "✍️ Хотите добавить комментарий к заказу?\n\nНапишите его одним сообщением (например: <i>'без лука'</i>), или нажмите кнопку ниже.",
         "skip_btn": "⏩ Пропустить",
         "comment_added": "✅ Комментарий добавлен. Отправляю заказ...",
         "cart_cleared": "🗑 Корзина очищена.",
         "thanks": "✅ Спасибо! Ваш заказ принят.\n\n📞 Номер для связи: {}\n📞 Служба поддержки: {}",
         "thanks_warn": "✅ Ваш заказ принят.\n\n📞 Номер для связи: {}\n⚠️ Если с вами не свяжутся в течение 10 минут — позвоните: {}",
-        "burger_list": "🍔 НАШИ БУРГЕРЫ:\n\n• Чизбургер классический — 28 000 сум\n• Шеф-Бургер с курицей — 26 000 сум",
-        "drink_list": "🥤 НАШИ НАПИТКИ:\n\n• Coca-Cola 0.5л — 7 000 сум\n• Чай чёрный / зелёный — 5 000 сум",
-        "combo_list": "📦 НАШИ ТОПОВЫЕ КОМБО:\n\n🔥 СУПЕР-КОМБО №1\nСостав: Бургер, фри, Coca-Cola.\n💰 Цена: 45 000 сум"
     },
     "uz": {
         "welcome": "Harakatni tanlang:",
@@ -87,16 +77,9 @@ TEXTS = {
         "addr_btn": "📍 Manzilni bilish",
         "lang_btn": "🌐 Сменить язык / Tilni o'zgartirish",
         "select_cat": "📋 Kerakli bo'limni tanlang:",
-        "burgers": "🍔 Burgerlar",
-        "drinks": "🥤 Ichimliklar",
-        "combo": "📦 Kombo-to'plamlar",
         "back": "🔙 Orqaga",
         "address": "📍 Demo-manzil: Toshkent, Mirobod tumani, mo'ljal: Gospitalniy bozori.",
-        "add_burger": "🍔 Chizburger qo'shish",
-        "add_chicken": "🍗 Shef-Burger qo'shish",
-        "add_cola": "🥤 Coca-Cola qo'shish",
-        "add_tea": "🍵 Choy qo'shish",
-        "add_combo": "📦 Super-kombo qo'shish",
+        
         "cart": "🧺 Savatim",
         "clear_cart": "🗑 Savatni tozalash",
         "order_btn": "🛒 Buyurtma berish",
@@ -105,30 +88,38 @@ TEXTS = {
         "cart_total": "💰 Jami:",
         "cart_hint": "\n💡 <i>(Miqdorni o'zgartirish uchun ➖ yoki ➕ tugmalarini bosing)</i>",
         "currency": "so'm",
+        
         "phone_req": "📱 Buyurtmani rasmiylashtirish uchun pastdagi tugmani bosib, telefon raqamingizni yuboring:",
         "phone_btn": "📞 Telefon raqamni yuborish",
         "phone_wrong": "❌ Iltimos, O'ZINGIZNING telefon raqamingizni yuboring — pastdagi tugmani bosing.",
-        "ask_comment": "✍️ Buyurtmaga izoh qo'shmoqchimisiz?\n\nUni bitta xabar bilan yozing (masalan: <i>'piyozsiz'</i> yoki <i>'5 daqiqadan keyin qo'ng'iroq qiling'</i>), yoki pastdagi tugmani bosing.",
+        
+        "ask_comment": "✍️ Buyurtmaga izoh qo'shmoqchimisiz?\n\nUni bitta xabar bilan yozing (masalan: <i>'piyozsiz'</i>), yoki pastdagi tugmani bosing.",
         "skip_btn": "⏩ O'tkazib yuborish",
         "comment_added": "✅ Izoh qo'shildi. Buyurtma yuborilmoqda...",
         "cart_cleared": "🗑 Savat tozalandi.",
         "thanks": "✅ Rahmat! Buyurtmangiz qabul qilindi.\n\n📞 Aloqa raqamingiz: {}\n📞 Qo'llab-quvvatlash markazi: {}",
         "thanks_warn": "✅ Buyurtmangiz qabul qilindi.\n\n📞 Aloqa raqamingiz: {}\n⚠️ Agar 10 daqiqa ichida siz bilan bog'lanmasa — qo'ng'iroq qiling: {}",
-        "burger_list": "🍔 BIZNING BURGERLAR:\n\n• Klassik chizburger — 28 000 so'm\n• Tovuqli Shef-Burger — 26 000 so'm",
-        "drink_list": "🥤 ICHIMLIKLAR:\n\n• Coca-Cola 0.5l — 7 000 so'm\n• Qora / Ko'k choy — 5 000 so'm",
-        "combo_list": "📦 BIZNING TOP KOMBOLAR:\n\n🔥 SUPER-KOMBO №1\nTarkibi: Burger, fri, Coca-Cola.\n💰 Narxi: 45 000 so'm"
     }
 }
 
 # =========================
-# ТОВАРЫ И ДАННЫЕ
+# ТОВАРЫ И ИХ ФОТО (ВСТАВЬ СВОИ ССЫЛКИ)
 # =========================
+# Я поставил красивые картинки из интернета для примера.
+# Когда будешь сдавать клиенту, просто замени ссылки на фото его блюд!
+
 PRODUCTS = {
-    "Чизбургер": 28000,
-    "Шеф-Бургер": 26000,
-    "Coca-Cola": 7000,
-    "Чай": 5000,
-    "Супер-комбо": 45000
+    "Чизбургер": {"price": 28000, "cat": "burgers", "photo": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=800&auto=format&fit=crop"},
+    "Шеф-Бургер": {"price": 26000, "cat": "burgers", "photo": "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=800&auto=format&fit=crop"},
+    "Coca-Cola": {"price": 7000, "cat": "drinks", "photo": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=800&auto=format&fit=crop"},
+    "Чай": {"price": 5000, "cat": "drinks", "photo": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?q=80&w=800&auto=format&fit=crop"},
+    "Супер-комбо": {"price": 45000, "cat": "combo", "photo": "https://images.unsplash.com/photo-1610614819513-58e34989848b?q=80&w=800&auto=format&fit=crop"}
+}
+
+CATEGORIES = {
+    "burgers": {"ru": "🍔 Бургеры", "uz": "🍔 Burgerlar"},
+    "drinks": {"ru": "🥤 Напитки", "uz": "🥤 Ichimliklar"},
+    "combo": {"ru": "📦 Комбо", "uz": "📦 Kombo"}
 }
 
 user_languages = {}
@@ -139,6 +130,7 @@ pending_orders = {}
 # =========================
 # ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
 # =========================
+
 def get_lang(user_id):
     return user_languages.get(user_id, "ru")
 
@@ -162,7 +154,7 @@ def calculate_total(user_id):
     cart = user_carts.get(user_id)
     if not cart:
         return 0
-    return sum(PRODUCTS[product] * quantity for product, quantity in cart.items() if product in PRODUCTS)
+    return sum(PRODUCTS[p]["price"] * q for p, q in cart.items() if p in PRODUCTS)
 
 def build_cart_text(user_id):
     lang = get_lang(user_id)
@@ -176,7 +168,7 @@ def build_cart_text(user_id):
     for product, quantity in cart.items():
         if product not in PRODUCTS:
             continue
-        subtotal = PRODUCTS[product] * quantity
+        subtotal = PRODUCTS[product]["price"] * quantity
         lines.append(f"• {product} × {quantity} = {subtotal:,} {currency}")
     
     total = calculate_total(user_id)
@@ -191,6 +183,10 @@ def build_phone_keyboard(lang):
     builder.add(types.KeyboardButton(text=TEXTS[lang]["phone_btn"], request_contact=True))
     return builder.as_markup(resize_keyboard=True)
 
+# =========================
+# ОТПРАВКА ЗАКАЗА
+# =========================
+
 async def send_final_order(user_id, lang, comment=None):
     data = pending_orders.pop(user_id, None)
     if not data:
@@ -203,7 +199,7 @@ async def send_final_order(user_id, lang, comment=None):
     for product, quantity in data["cart"].items():
         if product not in PRODUCTS:
             continue
-        subtotal = PRODUCTS[product] * quantity
+        subtotal = PRODUCTS[product]["price"] * quantity
         order_text += f"• {product} × {quantity} = {subtotal:,} {currency}\n"
 
     comment_text = f"\n📝 <b>Комментарий:</b> {comment}\n" if comment else ""
@@ -217,7 +213,7 @@ async def send_final_order(user_id, lang, comment=None):
         f"{order_text}\n"
         f"💰 ИТОГО: {data['total']:,} {currency}\n"
         f"{comment_text}"
-        "---------------------------\n⚠️ Свяжитесь с клиентом для уточнения деталей."
+        "---------------------------\n⚠️ Свяжитесь с клиентом."
     )
 
     admin_notified = False
@@ -237,12 +233,12 @@ async def send_final_order(user_id, lang, comment=None):
         text=TEXTS[lang][thanks_key].format(phone, SUPPORT_PHONE),
         reply_markup=builder.as_markup(resize_keyboard=True)
     )
-    
     processing_orders.discard(user_id)
 
 # =========================
-# ХЕНДЛЕРЫ
+# ГЛАВНОЕ МЕНЮ И КОРЗИНА
 # =========================
+
 async def show_main_menu(message: types.Message):
     lang = get_lang(message.from_user.id)
     builder = ReplyKeyboardBuilder()
@@ -274,6 +270,10 @@ async def show_cart(message: types.Message):
 
     await message.answer(build_cart_text(user_id), reply_markup=builder.as_markup(resize_keyboard=True), parse_mode="HTML")
 
+# =========================
+# ХЕНДЛЕРЫ: КОМАНДЫ И ЯЗЫК
+# =========================
+
 @dp.message(CommandStart())
 @dp.message(lambda msg: msg.text == "🌐 Сменить язык / Tilni o'zgartirish")
 async def choose_language(message: types.Message):
@@ -295,83 +295,98 @@ async def select_language(message: types.Message):
 async def cmd_cart(message: types.Message):
     await show_cart(message)
 
-@dp.message(Command("help"))
-async def cmd_help(message: types.Message):
-    help_text = (
-        "ℹ️ <b>Помощь по боту</b>\n\n"
-        "🛒 /cart — открыть корзину\n"
-        "🏠 /start — главное меню\n"
-        f"📞 Поддержка: {SUPPORT_PHONE}"
-    )
-    await message.answer(help_text, parse_mode="HTML")
+# =========================
+# КРАСИВОЕ МЕНЮ (INLINE КНОПКИ)
+# =========================
 
 @dp.message(lambda msg: msg.text in ["🍔 Посмотреть Меню", "🍔 Menyuni ko'rish"])
-async def menu_categories(message: types.Message):
+async def show_categories(message: types.Message):
     lang = get_lang(message.from_user.id)
-    builder = ReplyKeyboardBuilder()
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["burgers"]))
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["drinks"]))
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["combo"]))
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["back"]))
-    builder.adjust(2)
-    await message.answer(TEXTS[lang]["select_cat"], reply_markup=builder.as_markup(resize_keyboard=True))
+    builder = InlineKeyboardBuilder()
+    
+    # Добавляем кнопки категорий
+    builder.button(text=CATEGORIES["burgers"][lang], callback_data="cat_burgers")
+    builder.button(text=CATEGORIES["drinks"][lang], callback_data="cat_drinks")
+    builder.button(text=CATEGORIES["combo"][lang], callback_data="cat_combo")
+    builder.adjust(2, 1) # 2 кнопки в ряд, 1 снизу
+    
+    await message.answer(TEXTS[lang]["select_cat"], reply_markup=builder.as_markup())
 
-@dp.message(lambda msg: msg.text in ["🍔 Бургеры", "🍔 Burgerlar"])
-async def burgers_menu(message: types.Message):
-    lang = get_lang(message.from_user.id)
-    builder = ReplyKeyboardBuilder()
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["add_burger"]))
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["add_chicken"]))
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["cart"]))
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["back"]))
-    builder.adjust(2)
-    await message.answer(TEXTS[lang]["burger_list"], reply_markup=builder.as_markup(resize_keyboard=True))
+@dp.callback_query(lambda c: c.data.startswith("cat_"))
+async def show_category_items(callback: types.CallbackQuery):
+    await callback.answer() # Убираем часики на кнопке
+    cat_id = callback.data.split("_")[1]
+    lang = get_lang(callback.from_user.id)
+    
+    # Берем первый товар из категории, чтобы показать карточку
+    items = [k for k, v in PRODUCTS.items() if v["cat"] == cat_id]
+    if not items:
+        return
+        
+    await show_item_card(callback.message, items[0], lang, cat_id)
 
-@dp.message(lambda msg: msg.text in ["🥤 Напитки", "🥤 Ichimliklar"])
-async def drinks_menu(message: types.Message):
-    lang = get_lang(message.from_user.id)
-    builder = ReplyKeyboardBuilder()
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["add_cola"]))
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["add_tea"]))
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["cart"]))
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["back"]))
-    builder.adjust(2)
-    await message.answer(TEXTS[lang]["drink_list"], reply_markup=builder.as_markup(resize_keyboard=True))
+async def show_item_card(message: types.Message, product_name: str, lang: str, cat_id: str):
+    product = PRODUCTS[product_name]
+    currency = TEXTS[lang]["currency"]
+    
+    # Получаем все товары этой категории для кнопок
+    items = [k for k, v in PRODUCTS.items() if v["cat"] == cat_id]
+    
+    builder = InlineKeyboardBuilder()
+    for item in items:
+        price = PRODUCTS[item]["price"]
+        # Если товар уже в корзине, показываем это
+        builder.button(text=f"➕ {item} | {price:,} {currency}", callback_data=f"add_{item}")
+    
+    builder.button(text=TEXTS[lang]["back"], callback_data="back_to_cats")
+    builder.adjust(1) # Кнопки добавления в столбик
+    
+    caption = (
+        f"<b>{product_name}</b>\n"
+        f"💰 Цена: {product['price']:,} {currency}\n\n"
+        f"Нажмите на кнопку ниже, чтобы добавить в корзину:"
+    )
+    
+    # Отправляем фото с кнопками
+    try:
+        await message.answer_photo(
+            photo=product["photo"],
+            caption=caption,
+            reply_markup=builder.as_markup(),
+            parse_mode="HTML"
+        )
+    except Exception as e:
+        # Если фото не загрузилось, отправляем текстом
+        await message.answer(caption, reply_markup=builder.as_markup(), parse_mode="HTML")
 
-@dp.message(lambda msg: msg.text in ["📦 Комбо-наборы", "📦 Kombo-to'plamlar"])
-async def combo_menu(message: types.Message):
-    lang = get_lang(message.from_user.id)
-    builder = ReplyKeyboardBuilder()
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["add_combo"]))
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["cart"]))
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["back"]))
-    builder.adjust(2)
-    await message.answer(TEXTS[lang]["combo_list"], reply_markup=builder.as_markup(resize_keyboard=True))
+@dp.callback_query(lambda c: c.data == "back_to_cats")
+async def back_to_cats(callback: types.CallbackQuery):
+    await callback.answer()
+    await callback.message.delete() # Удаляем фото
+    lang = get_lang(callback.from_user.id)
+    builder = InlineKeyboardBuilder()
+    builder.button(text=CATEGORIES["burgers"][lang], callback_data="cat_burgers")
+    builder.button(text=CATEGORIES["drinks"][lang], callback_data="cat_drinks")
+    builder.button(text=CATEGORIES["combo"][lang], callback_data="cat_combo")
+    builder.adjust(2, 1)
+    await callback.message.answer(TEXTS[lang]["select_cat"], reply_markup=builder.as_markup())
 
-@dp.message(lambda msg: msg.text in ["🍔 Добавить чизбургер", "🍔 Chizburger qo'shish"])
-async def add_cheeseburger(message: types.Message):
-    add_to_cart(message.from_user.id, "Чизбургер")
-    await message.answer("✅ Чизбургер добавлен в корзину!")
+@dp.callback_query(lambda c: c.data.startswith("add_"))
+async def add_item_inline(callback: types.CallbackQuery):
+    product_name = callback.data[4:] # отрезаем "add_"
+    user_id = callback.from_user.id
+    lang = get_lang(user_id)
+    
+    if product_name in PRODUCTS:
+        add_to_cart(user_id, product_name)
+        # Показываем всплывающее окошко, что добавлено
+        await callback.answer(f"✅ {product_name} добавлен!", show_alert=False)
+    else:
+        await callback.answer("Ошибка", show_alert=True)
 
-@dp.message(lambda msg: msg.text in ["🍗 Добавить Шеф-Бургер", "🍗 Shef-Burger qo'shish"])
-async def add_chicken_burger(message: types.Message):
-    add_to_cart(message.from_user.id, "Шеф-Бургер")
-    await message.answer("✅ Шеф-Бургер добавлен в корзину!")
-
-@dp.message(lambda msg: msg.text in ["🥤 Добавить Coca-Cola", "🥤 Coca-Cola qo'shish"])
-async def add_cola(message: types.Message):
-    add_to_cart(message.from_user.id, "Coca-Cola")
-    await message.answer("✅ Coca-Cola добавлена в корзину!")
-
-@dp.message(lambda msg: msg.text in ["🍵 Добавить чай", "🍵 Choy qo'shish"])
-async def add_tea(message: types.Message):
-    add_to_cart(message.from_user.id, "Чай")
-    await message.answer("✅ Чай добавлен в корзину!")
-
-@dp.message(lambda msg: msg.text in ["📦 Добавить Супер-комбо", "📦 Super-kombo qo'shish"])
-async def add_combo(message: types.Message):
-    add_to_cart(message.from_user.id, "Супер-комбо")
-    await message.answer("✅ Супер-комбо добавлено в корзину!")
+# =========================
+# ХЕНДЛЕРЫ: КОРЗИНА (КНОПКИ ВНИЗУ)
+# =========================
 
 @dp.message(lambda msg: msg.text in ["🧺 Моя корзина", "🧺 Savatim"])
 async def open_cart(message: types.Message):
@@ -402,6 +417,10 @@ async def show_address(message: types.Message):
     lang = get_lang(message.from_user.id)
     await message.answer(TEXTS[lang]["address"])
 
+# =========================
+# ХЕНДЛЕРЫ: ОФОРМЛЕНИЕ
+# =========================
+
 @dp.message(lambda msg: msg.text in ["🛒 Оформить заказ", "🛒 Buyurtma berish"])
 async def request_phone(message: types.Message):
     user_id = message.from_user.id
@@ -421,7 +440,6 @@ async def handle_contact(message: types.Message):
         return
 
     if user_id in processing_orders or user_id in pending_orders:
-        logger.info(f"Повторный контакт от {user_id} — игнорируем")
         return
 
     cart = user_carts.get(user_id)
@@ -434,7 +452,7 @@ async def handle_contact(message: types.Message):
         "phone": message.contact.phone_number,
         "cart": cart.copy(),
         "total": calculate_total(user_id),
-        "username": f"@{message.from_user.username}" if message.from_user.username else "Нет юзернейма",
+        "username": f"@{message.from_user.username}" if message.from_user.username else "Нет",
         "first_name": message.from_user.first_name
     }
     user_carts.pop(user_id, None)
@@ -442,26 +460,20 @@ async def handle_contact(message: types.Message):
     builder = ReplyKeyboardBuilder()
     builder.add(types.KeyboardButton(text=TEXTS[lang]["skip_btn"]))
     
-    await message.answer(
-        TEXTS[lang]["ask_comment"], 
-        reply_markup=builder.as_markup(resize_keyboard=True),
-        parse_mode="HTML"
-    )
+    await message.answer(TEXTS[lang]["ask_comment"], reply_markup=builder.as_markup(resize_keyboard=True), parse_mode="HTML")
 
 @dp.message(lambda msg: msg.text in ["⏩ Пропустить", "⏩ O'tkazib yuborish"])
 async def skip_comment(message: types.Message):
     user_id = message.from_user.id
-    lang = get_lang(user_id)
     if user_id in pending_orders:
-        await send_final_order(user_id, lang, comment=None)
+        await send_final_order(user_id, get_lang(user_id), comment=None)
 
 @dp.message(lambda msg: msg.from_user.id in pending_orders and msg.text is not None)
 async def handle_comment(message: types.Message):
     user_id = message.from_user.id
     lang = get_lang(user_id)
-    comment = message.text.strip()
     await message.answer(TEXTS[lang]["comment_added"])
-    await send_final_order(user_id, lang, comment=comment)
+    await send_final_order(user_id, lang, comment=message.text.strip())
 
 @dp.message(lambda msg: msg.text in ["🔙 Назад", "🔙 Orqaga"])
 async def back_button(message: types.Message):
@@ -473,10 +485,10 @@ async def fallback(message: types.Message):
 
 @dp.error()
 async def error_handler(event: types.ErrorEvent):
-    logger.error(f"Необработанная ошибка: {event.exception}", exc_info=event.exception)
+    logger.error(f"Ошибка: {event.exception}", exc_info=event.exception)
 
 # =========================
-# WEBHOOK И HEALTHCHECK (ДЛЯ RENDER)
+# WEBHOOK И HEALTHCHECK
 # =========================
 
 async def handle_webhook(request: web.Request):
@@ -485,7 +497,7 @@ async def handle_webhook(request: web.Request):
         update = types.Update(**update_data)
         await dp.feed_update(bot, update)
     except Exception as e:
-        logger.error(f"Ошибка обработки вебхука: {e}")
+        logger.error(f"Ошибка вебхука: {e}")
     return web.Response(status=200)
 
 async def healthcheck(request: web.Request):
@@ -503,9 +515,7 @@ async def heartbeat():
 async def on_startup(app: web.Application):
     webhook_host = os.getenv("RENDER_EXTERNAL_URL") or os.getenv("WEBHOOK_HOST")
     if not webhook_host:
-        logger.error("❌ URL для вебхука не задан! Добавь WEBHOOK_HOST.")
         return
-        
     webhook_url = f"{webhook_host}/webhook/{TOKEN}"
     logger.info(f"Устанавливаю вебхук: {webhook_url}")
     
@@ -513,7 +523,6 @@ async def on_startup(app: web.Application):
         await bot.set_my_commands([
             types.BotCommand(command="start", description="🏠 Главное меню"),
             types.BotCommand(command="cart", description="🧺 Моя корзина"),
-            types.BotCommand(command="help", description="ℹ️ Помощь"),
         ])
         await bot.delete_webhook(drop_pending_updates=True)
         await bot.set_webhook(webhook_url)
@@ -522,22 +531,14 @@ async def on_startup(app: web.Application):
         logger.error(f"Ошибка при старте: {e}")
 
 async def on_shutdown(app: web.Application):
-    logger.info("🛑 Выключение бота...")
     await bot.session.close()
 
-# =========================
-# ЗАПУСК
-# =========================
-
 if __name__ == "__main__":
-    logger.info("🚀 ЗАПУСК БОТА В РЕЖИМЕ WEBHOOK...")
-    
+    logger.info("🚀 ЗАПУСК...")
     port = int(os.getenv("PORT", 8080))
     app = web.Application()
     
     app.router.add_post(f"/webhook/{TOKEN}", handle_webhook)
-    
-    # Добавили обработку для Render и для UptimeRobot
     app.router.add_get("/healthz", healthcheck) 
     app.router.add_get("/", healthcheck)
 
