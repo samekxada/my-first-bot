@@ -105,10 +105,7 @@
             animation: cardAppear 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
 
-        .card:active {
-            transform: scale(0.98);
-            background: #FDFDFD;
-        }
+        .card:active { transform: scale(0.98); background: #FDFDFD; }
 
         .card-img {
             width: 80px;
@@ -126,42 +123,13 @@
             justify-content: center;
         }
 
-        .card-title {
-            font-weight: 700;
-            font-size: 16px;
-            margin-bottom: 4px;
-            color: var(--text-main);
-        }
+        .card-title { font-weight: 700; font-size: 16px; margin-bottom: 4px; color: var(--text-main); }
+        .card-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; line-height: 1.3; }
 
-        .card-desc {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            line-height: 1.3;
-        }
-
-        .price-container {
-            display: flex;
-            align-items: baseline;
-            gap: 8px;
-        }
-
-        .card-price {
-            font-weight: 800;
-            font-size: 16px;
-            color: var(--accent);
-        }
-
-        .card-price.discounted {
-            color: var(--discount-red);
-        }
-
-        .old-price {
-            font-size: 12px;
-            color: #A0A0A0;
-            text-decoration: line-through;
-            font-weight: 600;
-        }
+        .price-container { display: flex; align-items: baseline; gap: 8px; }
+        .card-price { font-weight: 800; font-size: 16px; color: var(--accent); }
+        .card-price.discounted { color: var(--discount-red); }
+        .old-price { font-size: 12px; color: #A0A0A0; text-decoration: line-through; font-weight: 600; }
 
         .add-btn {
             background-color: var(--accent-light);
@@ -177,18 +145,11 @@
             justify-content: center;
             transition: all 0.2s;
         }
-
-        .add-btn:active {
-            background-color: var(--accent);
-            color: white;
-            transform: scale(0.9);
-        }
+        .add-btn:active { background-color: var(--accent); color: white; transform: scale(0.9); }
 
         .bottom-bar {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 0; left: 0; right: 0;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
@@ -203,23 +164,9 @@
             z-index: 100;
         }
 
-        .total-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .total-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .total-price {
-            font-weight: 800;
-            font-size: 22px;
-            color: var(--text-main);
-        }
+        .total-info { display: flex; flex-direction: column; }
+        .total-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .total-price { font-weight: 800; font-size: 22px; color: var(--text-main); }
 
         .checkout-btn {
             background-color: var(--accent);
@@ -233,14 +180,10 @@
             box-shadow: 0 4px 15px rgba(230, 74, 25, 0.3);
             transition: transform 0.1s;
         }
+        .checkout-btn:active { transform: scale(0.95); }
+        .checkout-btn:disabled { background-color: #ccc; box-shadow: none; }
 
-        .checkout-btn:active {
-            transform: scale(0.95);
-        }
-
-        @keyframes cardAppear {
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes cardAppear { to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -266,29 +209,24 @@
         tg.expand();
         tg.enableClosingConfirmation();
 
-        // ТВОИ ФОТОГРАФИИ (названия как ты скинул)
+        // ФОТОГРАФИИ
         const IMG_LAVASH = "lavash.jpg"; 
         const IMG_FRIES = "french_fries.jpg";
         const IMG_FUSETEA = "fusetea.jpg";
         const IMG_LIPTON = "lipton.jpg";
 
         const products = [
-            // Бургеры
             { id: 1, cat: "burgers", name: "Классик Бургер", price: 24000, desc: "Сочная котлета и свежие овощи", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=200" },
             { id: 2, cat: "burgers", name: "Чизбургер", price: 28000, desc: "Двойной сыр чеддер", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=200" },
             { id: 3, cat: "burgers", name: "Двойной Чизбургер", price: 38000, desc: "Для очень голодных", img: "https://images.unsplash.com/photo-1586816001966-79b736744398?q=80&w=200" },
             { id: 4, cat: "burgers", name: "Шеф-Бургер", price: 26000, desc: "С куриным филе", img: "https://images.unsplash.com/photo-1594212844822-18d2b66e3724?q=80&w=200" },
-            // Лаваши
             { id: 5, cat: "lavash", name: "Лаваш обычный", price: 25000, desc: "Классический лаваш", img: "https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=200" },
             { id: 6, cat: "lavash", name: "Лаваш сырный", price: 30000, desc: "Хрустящий лаваш с сыром", img: IMG_LAVASH },
-            // Закуски
             { id: 7, cat: "snacks", name: "Картошка фри", price: 15000, desc: "Средняя порция с кетчупом", img: IMG_FRIES },
             { id: 8, cat: "snacks", name: "Наггетсы (6 шт)", price: 18000, desc: "С хрустящей корочкой", img: "https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=200" },
-            // Напитки
             { id: 9, cat: "drinks", name: "Coca-Cola 0.5", price: 7000, desc: "Классика", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=200" },
             { id: 10, cat: "drinks", name: "Fuse Tea 0.5", price: 8000, desc: "Холодный чай с лимоном", img: IMG_FUSETEA },
             { id: 11, cat: "drinks", name: "Lipton 0.5", price: 8000, desc: "Зеленый чай", img: IMG_LIPTON },
-            // Комбо
             { id: 12, cat: "combo", name: "Узбекский пир", price: 75000, desc: "Двойной Шеф-Бургер, фри, Кола 1л", img: "https://images.unsplash.com/photo-1610440042657-612c34d95e9f?q=80&w=200" },
             { id: 13, cat: "combo", name: "Друзья навсегда", price: 99000, oldPrice: 199000, desc: "3 Чизбургера, фри, наггетсы, Fuse Tea 1.5л", img: "https://images.unsplash.com/photo-1594212844822-18d2b66e3724?q=80&w=200" }
         ];
@@ -304,6 +242,7 @@
         let cart = {};
         let currentCategory = "burgers";
         let currentTotalValue = 0;
+        let isSending = false; // Защита от двойного клика
 
         const navContainer = document.getElementById('nav-container');
         categories.forEach(cat => {
@@ -365,6 +304,7 @@
         renderProducts();
 
         function addToCart(id, name, price) {
+            if (isSending) return;
             if (!cart[id]) {
                 cart[id] = { name: name, price: price, qty: 1 };
             } else {
@@ -411,10 +351,17 @@
         }
 
         function sendOrder() {
+            if (isSending) return;
             if (Object.keys(cart).length === 0) {
                 tg.showAlert("Ваша корзина пуста! Добавьте что-нибудь 😉");
                 return;
             }
+            
+            isSending = true;
+            const btn = document.getElementById('checkout-btn');
+            btn.innerText = 'Отправка...';
+            btn.disabled = true;
+
             let itemsArray = [];
             for (let id in cart) {
                 itemsArray.push({
@@ -423,12 +370,15 @@
                     price: cart[id].price
                 });
             }
+
+            // Отправляем данные
             tg.sendData(JSON.stringify({ action: "new_order", items: itemsArray }));
-            tg.close();
+            
+            // Закрываем с задержкой в 500мс (100% доставка)
+            setTimeout(() => {
+                tg.close();
+            }, 500);
         }
-    </script>
-</body>
-</html>
     </script>
 </body>
 </html>
