@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Меню кафе</title>
+    <!-- Подключаем скрипт Telegram Mini Apps -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #ffffff);
+            --text-color: var(--tg-theme-text-color, #000000);
+            --button-color: var(--tg-theme-button-color, #2481cc);
+            --button-text-color: var(--tg-theme-button-text-color, #ffffff);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 16px;
+            padding-bottom: 90px; /* Место для нижней панели */
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .card {
+            background: rgba(0,0,0,0.05);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .card-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .card-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .card-price {
+            color: #888;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        .add-btn {
+            background-color: var(--button-color);
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-color);
+            padding: 16px;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .total-price {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .checkout-btn {
+            background-color: var(--button-color);
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🍔 Наше Меню</h1>
+        <p>Соберите заказ и нажмите "Оформить"</p>
+    </div>
+
+    <div id="menu-container">
+        <!-- Сюда будут загружаться товары -->
+    </div>
+
+    <div class="bottom-bar">
+        <div class="total-price">Итого: <span id="total">0</span> сум</div>
+        <button class="checkout-btn" onclick="sendOrder()">Оформить</button>
+    </div>
+
+    <script>
+        // Инициализация Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Разворачиваем на весь экран
+
+        // Наши товары (пока для примера)
+        const products = [
+            { id: 1, name: "Чизбургер", price: 28000 },
+            { id: 2, name: "Шеф-Бургер", price: 26000 },
+            { id: 3, name: "Комбо Узбекский пир", price: 75000 },
+            { id: 4, name: "Картошка фри", price: 15000 }
+        ];
+
+        let cart = {};
+
+        // Отрисовка меню
+        const container = document.getElementById('menu-container');
+        products.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `
+                <div class="card-info">
+                    <span class="card-title">${p.name}</span>
+                    <span class="card-price">${p.price.toLocaleString()} сум</span>
+                </div>
+                <button class="add-btn" onclick="addToCart(${p.id}, '${p.name}', ${p.price})">+</button>
+            `;
+            container.appendChild(div);
+        });
+
+        // Добавление в корзину
+        function addToCart(id, name, price) {
+            if (!cart[id]) {
+                cart[id] = { name: name, price: price, qty: 1 };
+            } else {
+                cart[id].qty++;
+            }
+            tg.HapticFeedback.impactOccurred('light'); // Вибрация (как в приложении)
+            updateTotal();
+        }
+
+        // Обновление суммы
+        function updateTotal() {
+            let total = 0;
+            for (let id in cart) {
+                total += cart[id].price * cart[id].qty;
+            }
+            document.getElementById('total').innerText = total.toLocaleString();
+        }
+
+        // Отправка заказа в бота
+        function sendOrder() {
+            if (Object.keys(cart).length === 0) {
+                tg.showAlert("Корзина пуста! Добавьте товары.");
+                return;
+            }
+
+            // Формируем данные для отправки
+            let orderData = [];
+            for (let id in cart) {
+                orderData.push(`${cart[id].name} x${cart[id].qty}`);
+            }
+
+            // Отправляем данные в бота (этот текст придет в Python)
+            tg.sendData(JSON.stringify({
+                action: "new_order",
+                items: orderData,
+                total: document.getElementById('total').innerText
+            }));
+
+            // Закрываем Web App
+            tg.close();
+        }
+    </script>
+</body>
+</html>
