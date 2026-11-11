@@ -13,37 +13,36 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 # =========================
 
 load_dotenv()
-
 TOKEN = os.getenv("BOT_TOKEN")
-if not TOKEN:
-    raise RuntimeError("❌ BOT_TOKEN не найден!")
+if not TOKEN: raise RuntimeError("❌ BOT_TOKEN не найден!")
 
-try:
-    ADMIN_CHAT_ID = int(os.getenv("ADMIN_CHAT_ID", "0"))
-except ValueError:
-    ADMIN_CHAT_ID = 0
+try: ADMIN_CHAT_ID = int(os.getenv("ADMIN_CHAT_ID", "0"))
+except ValueError: ADMIN_CHAT_ID = 0
 
 SUPPORT_PHONE = "+998 (90) 931-31-07"
 PLUS_PREFIX = "➕ "
 MINUS_PREFIX = "➖ "
 
-# =========================
-# ЛОГГИРОВАНИЕ И БОТ
-# =========================
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
-
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 # =========================
-# ТЕКСТЫ
+# ТЕКСТЫ (В СТИЛЕ TORTELE)
 # =========================
 
 TEXTS = {
     "ru": {
-        "welcome": "Выберите действие:",
+        "welcome": (
+            "🍔 <b>Добро пожаловать!</b>\n\n"
+            "<b>НАШЕ КАФЕ</b> — лучший выбор для быстрых и вкусных заказов в Ташкенте. "
+            "Заказывайте онлайн, мы доставим! 🛵\n\n"
+            "📱 <b>Зачем нужен номер телефона?</b>\n"
+            "Для отслеживания заказа и доставки. Больше ни для чего.\n\n"
+            "Нажмите кнопку ниже, чтобы продолжить 👇"
+        ),
+        "order_btn_start": "🛍 Сделать заказ",
         "menu_btn": "🍔 Посмотреть Меню",
         "addr_btn": "📍 Узнать Адрес",
         "lang_btn": "🌐 Сменить язык / Tilni o'zgartirish",
@@ -60,7 +59,7 @@ TEXTS = {
         "cart_hint": "\n💡 <i>(Нажимайте ➖ или ➕, чтобы изменить количество)</i>",
         "currency": "сум",
         
-        "phone_req": "📱 Для оформления заказа отправьте ваш номер телефона, нажав кнопку ниже:",
+        "phone_req": "📱 Отправьте ваш номер телефона, нажав кнопку ниже:",
         "phone_btn": "📞 Отправить номер телефона",
         "phone_wrong": "❌ Пожалуйста, отправьте СВОЙ номер телефона — нажмите кнопку ниже.",
         
@@ -74,7 +73,15 @@ TEXTS = {
         "sauce_added": "✅ Соус добавлен!"
     },
     "uz": {
-        "welcome": "Harakatni tanlang:",
+        "welcome": (
+            "🍔 <b>Xush kelibsiz!</b>\n\n"
+            "<b>BIZNING KAFE</b> — Toshkentdagi eng mazali va tezkor buyurtmalar. "
+            "Onlayn buyurtma bering, biz yetkazib beramiz! 🛵\n\n"
+            "📱 <b>Nima uchun telefon raqami kerak?</b>\n"
+            "Buyurtmani kuzatish va yetkazib berish uchun. Boshqa hech narsa uchun emas.\n\n"
+            "Davom etish uchun pastdagi tugmani bosing 👇"
+        ),
+        "order_btn_start": "🛍 Buyurtma berish",
         "menu_btn": "🍔 Menyuni ko'rish",
         "addr_btn": "📍 Manzilni bilish",
         "lang_btn": "🌐 Сменить язык / Tilni o'zgartirish",
@@ -91,25 +98,24 @@ TEXTS = {
         "cart_hint": "\n💡 <i>(Miqdorni o'zgartirish uchun ➖ yoki ➕ tugmalarini bosing)</i>",
         "currency": "so'm",
         
-        "phone_req": "📱 Buyurtmani rasmiylashtirish uchun pastdagi tugmani bosib, telefon raqamingizni yuboring:",
+        "phone_req": "📱 Telefon raqamingizni yuboring:",
         "phone_btn": "📞 Telefon raqamni yuborish",
-        "phone_wrong": "❌ Iltimos, O'ZINGIZNING telefon raqamingizni yuboring — pastdagi tugmani bosing.",
+        "phone_wrong": "❌ Iltimos, O'ZINGIZNING raqamingizni yuboring.",
         
-        "ask_comment": "✍️ Buyurtmaga izoh qo'shmoqchimisiz?\n\nUni bitta xabar bilan yozing (masalan: <i>'piyozsiz'</i>), yoki pastdagi tugmani bosing.",
+        "ask_comment": "✍️ Buyurtmaga izoh qo'shmoqchimisiz?\n\nYozing (masalan: <i>'piyozsiz'</i>), yoki tugmani bosing.",
         "skip_btn": "⏩ O'tkazib yuborish",
-        "comment_added": "✅ Izoh qo'shildi. Buyurtma yuborilmoqda...",
+        "comment_added": "✅ Izoh qo'shildi. Yuborilmoqda...",
         "cart_cleared": "🗑 Savat tozalandi.",
-        "thanks": "✅ Rahmat! Buyurtmangiz qabul qilindi.\n\n📞 Aloqa raqamingiz: {}\n📞 Qo'llab-quvvatlash markazi: {}",
-        "thanks_warn": "✅ Buyurtmangiz qabul qilindi.\n\n📞 Aloqa raqamingiz: {}\n⚠️ Agar 10 daqiqa ichida siz bilan bog'lanmasa — qo'ng'iroq qiling: {}",
-        "sauce_offer": "🥫 Ajoyib tanlov! Buyurtmaga sous qo'shmoqchimisiz?",
+        "thanks": "✅ Rahmat! Buyurtmangiz qabul qilindi.\n\n📞 Aloqa: {}\n📞 Yordam: {}",
+        "thanks_warn": "✅ Buyurtma qabul qilindi.\n\n📞 Aloqa: {}\n⚠️ 10 daqiqada bog'lanmasa — qo'ng'iroq qiling: {}",
+        "sauce_offer": "🥫 Ajoyib tanlov! Sous qo'shmoqchimisiz?",
         "sauce_added": "✅ Sous qo'shildi!"
     }
 }
 
 # =========================
-# КАТЕГОРИИ
+# КАТЕГОРИИ И ТОВАРЫ
 # =========================
-
 CATEGORIES = {
     "burgers": {"ru": "🍔 Бургеры", "uz": "🍔 Burgerlar"},
     "lavash": {"ru": "🌯 Лаваши", "uz": "🌯 Lavashlar"},
@@ -119,63 +125,33 @@ CATEGORIES = {
     "combo": {"ru": "📦 Комбо", "uz": "📦 Kombo"}
 }
 
-# =========================
-# ТОВАРЫ (ЦЕНЫ, ФОТО, ОПИСАНИЯ КОМБО)
-# =========================
-
 PRODUCTS = {
-    # --- БУРГЕРЫ ---
     "Классик Бургер": {"price": 24000, "cat": "burgers", "photo": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=800"},
     "Чизбургер": {"price": 28000, "cat": "burgers", "photo": "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=800"},
     "Двойной Чизбургер": {"price": 38000, "cat": "burgers", "photo": "https://images.unsplash.com/photo-1586816001966-79b736744398?q=80&w=800"},
     "Шеф-Бургер": {"price": 26000, "cat": "burgers", "photo": "https://images.unsplash.com/photo-1594212844822-18d2b66e3724?q=80&w=800"},
-    "Двойной Шеф-Бургер": {"price": 36000, "cat": "burgers", "photo": "https://images.unsplash.com/photo-1603064752734-4c48eff53d05?q=80&w=800"},
-    "Острый Бургер": {"price": 29000, "cat": "burgers", "photo": "https://images.unsplash.com/photo-1615297928064-24977384d0da?q=80&w=800"},
-
-    # --- ЛАВАШИ ---
+    
     "Лаваш обычный": {"price": 25000, "cat": "lavash", "photo": "https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=800"},
     "Лаваш сырный": {"price": 30000, "cat": "lavash", "photo": "https://images.unsplash.com/photo-1604868189265-38f2854b6e48?q=80&w=800"},
-    "Лаваш острый": {"price": 28000, "cat": "lavash", "photo": "https://images.unsplash.com/photo-1619895092538-128341789043?q=80&w=800"},
-
-    # --- ЗАКУСКИ ---
+    
     "Картошка фри (средняя)": {"price": 15000, "cat": "snacks", "photo": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=800"},
-    "Картошка фри (большая)": {"price": 20000, "cat": "snacks", "photo": "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?q=80&w=800"},
     "Наггетсы (6 шт)": {"price": 18000, "cat": "snacks", "photo": "https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=800"},
-    "Крылышки (6 шт)": {"price": 32000, "cat": "snacks", "photo": "https://images.unsplash.com/photo-1527477396000-e27163b481c2?q=80&w=800"},
-
-    # --- НАПИТКИ ---
+    
     "Coca-Cola 0.5": {"price": 7000, "cat": "drinks", "photo": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=800"},
     "Pepsi 0.5": {"price": 7000, "cat": "drinks", "photo": "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?q=80&w=800"},
-    "Fanta 0.5": {"price": 7000, "cat": "drinks", "photo": "https://images.unsplash.com/photo-1624517452488-04869289c4ca?q=80&w=800"},
-    "Lipton 0.5": {"price": 8000, "cat": "drinks", "photo": "https://images.unsplash.com/photo-1556881286-fc6915169721?q=80&w=800"},
-    "Сок (0.2)": {"price": 10000, "cat": "drinks", "photo": "https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=800"},
-
-    # --- СОУСЫ ---
+    
     "Соус сырный": {"price": 3000, "cat": "sauces", "photo": "https://images.unsplash.com/photo-1619860860774-1e2e17343432?q=80&w=800"},
     "Соус чесночный": {"price": 3000, "cat": "sauces", "photo": "https://images.unsplash.com/photo-1599321955726-e04842f9159f?q=80&w=800"},
-    "Кетчуп": {"price": 2000, "cat": "sauces", "photo": "https://images.unsplash.com/photo-1607013251379-e6eecfffe234?q=80&w=800"},
-    "Соус Барбекю": {"price": 3000, "cat": "sauces", "photo": "https://images.unsplash.com/photo-1589647427545-38dfc97e5a8f?q=80&w=800"},
-
-    # --- КОМБО (С ОПИСАНИЕМ) ---
-    "Комбо Соло": {
-        "price": 45000, "cat": "combo", 
-        "photo": "https://images.unsplash.com/photo-1610614819513-58e34989848b?q=80&w=800",
-        "desc": "Состав: Чизбургер, Картошка фри (средняя), Coca-Cola 0.5"
-    },
+    
     "Узбекский пир": {
         "price": 75000, "cat": "combo", 
         "photo": "https://images.unsplash.com/photo-1610440042657-612c34d95e9f?q=80&w=800",
-        "desc": "Состав: Двойной Шеф-Бургер, Картошка фри (средняя), Coca-Cola 1 литр"
-    },
-    "Семейный ужин": {
-        "price": 150000, "cat": "combo", 
-        "photo": "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=800",
-        "desc": "Состав: 2 Двойных Чизбургера, 2 Лаваша, Картошка фри (большая), Наггетсы (6 шт), 2 Coca-Cola 0.5"
+        "desc": "Состав: Двойной Шеф-Бургер, Картошка фри, Coca-Cola 1л"
     },
     "Друзья навсегда": {
         "price": 199000, "cat": "combo", 
         "photo": "https://images.unsplash.com/photo-1594212844822-18d2b66e3724?q=80&w=800",
-        "desc": "Состав: 3 Двойных Чизбургера, Картошка фри (большая), Наггетсы (9 шт), Pepsi 1.5 литра, 3 Соуса на выбор"
+        "desc": "Состав: 3 Двойных Чизбургера, Картошка фри, Наггетсы, Pepsi 1.5л, 3 Соуса"
     }
 }
 
@@ -184,6 +160,7 @@ PRODUCTS = {
 # =========================
 user_languages = {}
 user_carts = {}
+user_phones = {} # Храним номера телефонов
 processing_orders = set()
 pending_orders = {} 
 
@@ -191,8 +168,7 @@ pending_orders = {}
 # ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
 # =========================
 
-def get_lang(user_id):
-    return user_languages.get(user_id, "ru")
+def get_lang(user_id): return user_languages.get(user_id, "ru")
 
 def add_to_cart(user_id, product, qty=1):
     if product not in PRODUCTS: return
@@ -259,8 +235,7 @@ async def send_final_order(user_id, lang, comment=None):
         try:
             await bot.send_message(chat_id=ADMIN_CHAT_ID, text=admin_message, parse_mode="HTML")
             admin_notified = True
-        except Exception as e:
-            logger.error(f"Ошибка отправки админу: {e}")
+        except Exception as e: logger.error(f"Ошибка админу: {e}")
             
     thanks_key = "thanks" if admin_notified else "thanks_warn"
     builder = ReplyKeyboardBuilder()
@@ -270,16 +245,8 @@ async def send_final_order(user_id, lang, comment=None):
     processing_orders.discard(user_id)
 
 # =========================
-# ГЛАВНОЕ МЕНЮ И КОРЗИНА
+# МЕНЮ И КОРЗИНА
 # =========================
-
-async def show_main_menu(message: types.Message):
-    lang = get_lang(message.from_user.id)
-    builder = ReplyKeyboardBuilder()
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["menu_btn"]), types.KeyboardButton(text=TEXTS[lang]["addr_btn"]),
-                types.KeyboardButton(text=TEXTS[lang]["cart"]), types.KeyboardButton(text=TEXTS[lang]["lang_btn"]))
-    builder.adjust(1)
-    await message.answer(TEXTS[lang]["welcome"], reply_markup=builder.as_markup(resize_keyboard=True))
 
 async def show_cart(message: types.Message):
     user_id = message.from_user.id
@@ -296,13 +263,8 @@ async def show_cart(message: types.Message):
 
     await message.answer(build_cart_text(user_id), reply_markup=builder.as_markup(resize_keyboard=True), parse_mode="HTML")
 
-# =========================
-# КОМАНДЫ И ЯЗЫК
-# =========================
-
 @dp.message(CommandStart())
-@dp.message(lambda msg: msg.text == "🌐 Сменить язык / Tilni o'zgartirish")
-async def choose_language(message: types.Message):
+async def cmd_start(message: types.Message):
     builder = ReplyKeyboardBuilder()
     builder.add(types.KeyboardButton(text="🇷🇺 Русский"), types.KeyboardButton(text="🇺🇿 O'zbekcha"))
     builder.adjust(2)
@@ -310,15 +272,33 @@ async def choose_language(message: types.Message):
 
 @dp.message(lambda msg: msg.text in ["🇷🇺 Русский", "🇺🇿 O'zbekcha"])
 async def select_language(message: types.Message):
-    user_languages[message.from_user.id] = "ru" if message.text == "🇷🇺 Русский" else "uz"
-    await show_main_menu(message)
+    lang = "ru" if message.text == "🇷🇺 Русский" else "uz"
+    user_languages[message.from_user.id] = lang
+    
+    # Тот самый экран из TORTELE
+    builder = ReplyKeyboardBuilder()
+    builder.add(types.KeyboardButton(text=TEXTS[lang]["order_btn_start"], request_contact=True))
+    await message.answer(TEXTS[lang]["welcome"], reply_markup=builder.as_markup(resize_keyboard=True), parse_mode="HTML")
 
-@dp.message(Command("cart"))
-async def cmd_cart(message: types.Message): await show_cart(message)
+# Обработка кнопки "Сделать заказ" (сбор телефона)
+@dp.message(lambda msg: msg.contact is not None)
+async def handle_contact(message: types.Message):
+    user_id = message.from_user.id
+    lang = get_lang(user_id)
 
-# =========================
-# МЕНЮ (INLINE КНОПКИ)
-# =========================
+    if message.contact.user_id != user_id:
+        await message.answer(TEXTS[lang]["phone_wrong"])
+        return
+
+    # Сохраняем номер в базу
+    user_phones[user_id] = message.contact.phone_number
+
+    # Показываем главное меню с категориями
+    builder = ReplyKeyboardBuilder()
+    builder.add(types.KeyboardButton(text=TEXTS[lang]["menu_btn"]), types.KeyboardButton(text=TEXTS[lang]["cart"]))
+    builder.add(types.KeyboardButton(text=TEXTS[lang]["addr_btn"]), types.KeyboardButton(text=TEXTS[lang]["lang_btn"]))
+    builder.adjust(2)
+    await message.answer("✅ Отлично! Теперь вы можете сделать заказ:", reply_markup=builder.as_markup(resize_keyboard=True))
 
 @dp.message(lambda msg: msg.text in ["🍔 Посмотреть Меню", "🍔 Menyuni ko'rish"])
 async def show_categories(message: types.Message):
@@ -328,6 +308,10 @@ async def show_categories(message: types.Message):
         builder.button(text=cat_names[lang], callback_data=f"cat_{cat_id}")
     builder.adjust(2)
     await message.answer(TEXTS[lang]["select_cat"], reply_markup=builder.as_markup())
+
+# =========================
+# INLINE МЕНЮ
+# =========================
 
 @dp.callback_query(lambda c: c.data.startswith("cat_"))
 async def show_category_items(callback: types.CallbackQuery):
@@ -349,7 +333,6 @@ async def show_item_card(message: types.Message, product_name: str, lang: str, c
     builder.button(text=TEXTS[lang]["back"], callback_data="back_to_cats")
     builder.adjust(1) 
     
-    # Выводим описание для комбо
     desc_text = f"\n<i>{product.get('desc', '')}</i>\n" if "desc" in product else ""
     caption = f"<b>{CATEGORIES[cat_id][lang]}</b>\n{desc_text}\nВыберите товар, чтобы добавить:"
     
@@ -365,10 +348,6 @@ async def back_to_cats(callback: types.CallbackQuery):
     except: pass
     await show_categories(callback.message)
 
-# =========================
-# ДОБАВЛЕНИЕ В КОРЗИНУ И АПСЕЛЛ СОУСОВ
-# =========================
-
 @dp.callback_query(lambda c: c.data.startswith("add_"))
 async def add_item_inline(callback: types.CallbackQuery):
     product_name = callback.data[4:]
@@ -379,7 +358,6 @@ async def add_item_inline(callback: types.CallbackQuery):
         add_to_cart(user_id, product_name)
         await callback.answer(f"✅ {product_name} добавлен!", show_alert=False)
         
-        # Апселл соусов (если это не соус и не напиток)
         if PRODUCTS[product_name]["cat"] in ["burgers", "lavash", "snacks", "combo"]:
             builder = InlineKeyboardBuilder()
             for p, data in PRODUCTS.items():
@@ -387,24 +365,20 @@ async def add_item_inline(callback: types.CallbackQuery):
                     builder.button(text=f"🥫 {p} (+{data['price']:,})", callback_data=f"sauce_{p}")
             builder.adjust(2)
             await callback.message.answer(TEXTS[lang]["sauce_offer"], reply_markup=builder.as_markup())
-    else:
-        await callback.answer("Ошибка", show_alert=True)
 
 @dp.callback_query(lambda c: c.data.startswith("sauce_"))
 async def add_sauce_inline(callback: types.CallbackQuery):
     sauce_name = callback.data[6:]
     user_id = callback.from_user.id
     lang = get_lang(user_id)
-    
     if sauce_name in PRODUCTS:
         add_to_cart(user_id, sauce_name)
         await callback.answer(TEXTS[lang]["sauce_added"], show_alert=False)
-        # Удаляем сообщение с предложением соуса, чтобы не засорять чат
         try: await callback.message.delete()
         except: pass
 
 # =========================
-# КОРЗИНА (КНОПКИ ВНИЗУ)
+# КОРЗИНА И ОФОРМЛЕНИЕ
 # =========================
 
 @dp.message(lambda msg: msg.text in ["🧺 Моя корзина", "🧺 Savatim"])
@@ -431,29 +405,24 @@ async def clear_cart(message: types.Message):
 async def show_address(message: types.Message):
     await message.answer(TEXTS[get_lang(message.from_user.id)]["address"])
 
-# =========================
-# ОФОРМЛЕНИЕ ЗАКАЗА
-# =========================
-
 @dp.message(lambda msg: msg.text in ["🛒 Оформить заказ", "🛒 Buyurtma berish"])
-async def request_phone(message: types.Message):
+async def request_order(message: types.Message):
     user_id, lang = message.from_user.id, get_lang(message.from_user.id)
-    if not user_carts.get(user_id): await message.answer(TEXTS[lang]["cart_empty"]); return
-    await message.answer(TEXTS[lang]["phone_req"], reply_markup=build_phone_keyboard(lang))
-
-@dp.message(lambda msg: msg.contact is not None)
-async def handle_contact(message: types.Message):
-    user_id, lang = message.from_user.id, get_lang(message.from_user.id)
-
-    if message.contact.user_id != user_id:
-        await message.answer(TEXTS[lang]["phone_wrong"], reply_markup=build_phone_keyboard(lang))
+    if not user_carts.get(user_id): 
+        await message.answer(TEXTS[lang]["cart_empty"])
         return
+    
+    # Если номер уже есть, сразу переходим к комментарию
+    if user_id in user_phones:
+        await ask_for_comment(message)
+    else:
+        await message.answer(TEXTS[lang]["phone_req"], reply_markup=build_phone_keyboard(lang))
 
-    if user_id in processing_orders or user_id in pending_orders or not user_carts.get(user_id): return
-
+async def ask_for_comment(message: types.Message):
+    user_id, lang = message.from_user.id, get_lang(message.from_user.id)
     processing_orders.add(user_id)
     pending_orders[user_id] = {
-        "phone": message.contact.phone_number,
+        "phone": user_phones.get(user_id, "Неизвестен"),
         "cart": user_carts.get(user_id).copy(),
         "total": calculate_total(user_id),
         "username": f"@{message.from_user.username}" if message.from_user.username else "Нет",
@@ -464,6 +433,16 @@ async def handle_contact(message: types.Message):
     builder = ReplyKeyboardBuilder()
     builder.add(types.KeyboardButton(text=TEXTS[lang]["skip_btn"]))
     await message.answer(TEXTS[lang]["ask_comment"], reply_markup=builder.as_markup(resize_keyboard=True), parse_mode="HTML")
+
+# Обработка отправки контакта при оформлении (если номера не было)
+@dp.message(lambda msg: msg.contact is not None and msg.from_user.id in user_carts and msg.from_user.id not in processing_orders)
+async def handle_order_contact(message: types.Message):
+    user_id = message.from_user.id
+    if message.contact.user_id != user_id:
+        await message.answer(TEXTS[get_lang(user_id)]["phone_wrong"])
+        return
+    user_phones[user_id] = message.contact.phone_number
+    await ask_for_comment(message)
 
 @dp.message(lambda msg: msg.text in ["⏩ Пропустить", "⏩ O'tkazib yuborish"])
 async def skip_comment(message: types.Message):
@@ -476,11 +455,22 @@ async def handle_comment(message: types.Message):
     await message.answer(TEXTS[get_lang(user_id)]["comment_added"])
     await send_final_order(user_id, get_lang(user_id), comment=message.text.strip())
 
+@dp.message(lambda msg: msg.text in ["🌐 Сменить язык / Tilni o'zgartirish"])
+async def change_lang(message: types.Message):
+    await cmd_start(message)
+
 @dp.message(lambda msg: msg.text in ["🔙 Назад", "🔙 Orqaga"])
-async def back_button(message: types.Message): await show_main_menu(message)
+async def back_to_menu(message: types.Message):
+    lang = get_lang(message.from_user.id)
+    builder = ReplyKeyboardBuilder()
+    builder.add(types.KeyboardButton(text=TEXTS[lang]["menu_btn"]), types.KeyboardButton(text=TEXTS[lang]["cart"]))
+    builder.add(types.KeyboardButton(text=TEXTS[lang]["addr_btn"]), types.KeyboardButton(text=TEXTS[lang]["lang_btn"]))
+    builder.adjust(2)
+    await message.answer(TEXTS[lang]["welcome"], reply_markup=builder.as_markup(resize_keyboard=True), parse_mode="HTML")
 
 @dp.message()
-async def fallback(message: types.Message): await show_main_menu(message)
+async def fallback(message: types.Message):
+    await back_to_menu(message)
 
 @dp.error()
 async def error_handler(event: types.ErrorEvent):
@@ -499,23 +489,15 @@ async def handle_webhook(request: web.Request):
 
 async def healthcheck(request: web.Request): return web.Response(text="Bot is running!")
 
-async def heartbeat():
-    while True:
-        await asyncio.sleep(3600)
-        if ADMIN_CHAT_ID:
-            try: await bot.send_message(ADMIN_CHAT_ID, "💚 Бот работает")
-            except: pass
-
 async def on_startup(app: web.Application):
     webhook_host = os.getenv("RENDER_EXTERNAL_URL") or os.getenv("WEBHOOK_HOST")
     if not webhook_host: return
     webhook_url = f"{webhook_host}/webhook/{TOKEN}"
-    logger.info(f"Устанавливаю вебхук: {webhook_url}")
+    logger.info(f"Вебхук: {webhook_url}")
     try:
-        await bot.set_my_commands([types.BotCommand(command="start", description="🏠 Главное меню"), types.BotCommand(command="cart", description="🧺 Моя корзина")])
+        await bot.set_my_commands([types.BotCommand(command="start", description="🏠 Главное меню"), types.BotCommand(command="cart", description="🧺 Корзина")])
         await bot.delete_webhook(drop_pending_updates=True)
         await bot.set_webhook(webhook_url)
-        asyncio.create_task(heartbeat())
     except Exception as e: logger.error(f"Ошибка при старте: {e}")
 
 async def on_shutdown(app: web.Application): await bot.session.close()
