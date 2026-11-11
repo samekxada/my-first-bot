@@ -15,10 +15,13 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
-if not TOKEN: raise RuntimeError("❌ BOT_TOKEN не найден!")
+if not TOKEN: 
+    raise RuntimeError("❌ BOT_TOKEN не найден в переменных окружения!")
 
-try: ADMIN_CHAT_ID = int(os.getenv("ADMIN_CHAT_ID", "0"))
-except ValueError: ADMIN_CHAT_ID = 0
+try: 
+    ADMIN_CHAT_ID = int(os.getenv("ADMIN_CHAT_ID", "0"))
+except ValueError: 
+    ADMIN_CHAT_ID = 0
 
 SUPPORT_PHONE = "+998 (90) 931-31-07"
 
@@ -34,10 +37,9 @@ dp = Dispatcher()
 TEXTS = {
     "ru": {
         "welcome": "🍔 <b>Добро пожаловать!</b>\n\nЗаказывайте онлайн, мы доставим! 🛵\n\nНажмите на <b>синюю кнопку</b> внизу слева, чтобы открыть меню.",
-        "menu_btn": "🍔 Посмотреть Меню",
+        "menu_btn": "🍔 Меню (кнопка ниже)",
         "addr_btn": "📍 Узнать Адрес",
         "lang_btn": "🌐 Язык / Til",
-        "back": "🔙 Назад",
         "address": "📍 Демо-адрес: Ташкент, Мирабадский район.",
         
         "phone_req": "📱 Отправьте ваш номер телефона, нажав кнопку ниже, чтобы подтвердить заказ:",
@@ -54,10 +56,9 @@ TEXTS = {
     },
     "uz": {
         "welcome": "🍔 <b>Xush kelibsiz!</b>\n\nOnlayn buyurtma bering, biz yetkazib beramiz! 🛵\n\nMenyuni ochish uchun pastdagi <b>ko'k tugmani</b> bosing.",
-        "menu_btn": "🍔 Menyuni ko'rish",
+        "menu_btn": "🍔 Menyu (pastdagi tugma)",
         "addr_btn": "📍 Manzilni bilish",
         "lang_btn": "🌐 Язык / Til",
-        "back": "🔙 Orqaga",
         "address": "📍 Demo-manzil: Toshkent, Mirobod tumani.",
         
         "phone_req": "📱 Buyurtmani tasdiqlash uchun pastdagi tugma orqali raqamingizni yuboring:",
@@ -74,7 +75,7 @@ TEXTS = {
     }
 }
 
-# База цен для соусов (нужна для апселла)
+# База цен для соусов (для апселла)
 PRODUCTS = {
     "Соус сырный": 3000, 
     "Соус чесночный": 3000,
@@ -83,14 +84,15 @@ PRODUCTS = {
 }
 
 user_languages = {}
-webapp_carts = {} # Корзины из Mini App
-pending_orders = {} # Заказы, ожидающие комментария
+webapp_carts = {} 
+pending_orders = {} 
 
 # =========================
 # ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
 # =========================
 
-def get_lang(user_id): return user_languages.get(user_id, "ru")
+def get_lang(user_id): 
+    return user_languages.get(user_id, "ru")
 
 def build_phone_keyboard(lang):
     builder = ReplyKeyboardBuilder()
@@ -99,7 +101,6 @@ def build_phone_keyboard(lang):
 
 def get_main_keyboard(lang):
     builder = ReplyKeyboardBuilder()
-    builder.add(types.KeyboardButton(text=TEXTS[lang]["menu_btn"]))
     builder.add(types.KeyboardButton(text=TEXTS[lang]["addr_btn"]))
     builder.add(types.KeyboardButton(text=TEXTS[lang]["lang_btn"]))
     builder.adjust(1)
@@ -114,9 +115,8 @@ async def finalize_order(user_id, lang, comment=None):
     if not data: return
 
     phone = data["phone"]
-    currency = TEXTS[lang]["currency"] if "currency" in TEXTS[lang] else "сум"
+    currency = "сум" if lang == "ru" else "so'm"
     
-    # Формируем чек
     order_text = ""
     total = 0
     for item in data["cart"]:
@@ -135,9 +135,8 @@ async def finalize_order(user_id, lang, comment=None):
 
     notified = False
     if ADMIN_CHAT_ID:
-        # Создаем кнопку для админа
         admin_kb = InlineKeyboardBuilder()
-        # Передаем user_id в callback_data, чтобы знать, кому отправлять уведомление
+        # Кнопка завершения заказа
         admin_kb.button(text="✅ Завершить заказ", callback_data=f"complete_{user_id}")
         
         try:
@@ -149,14 +148,13 @@ async def finalize_order(user_id, lang, comment=None):
             )
             notified = True
         except Exception as e: 
-            logger.error(f"Ошибка админу: {e}")
+            logger.error(f"Ошибка отправки админу: {e}")
             
     thanks_key = "thanks" if notified else "thanks_warn"
     await bot.send_message(user_id, TEXTS[lang][thanks_key].format(phone, SUPPORT_PHONE), reply_markup=get_main_keyboard(lang))
 
-
 # =========================
-# ХЕНДЛЕРЫ: СТАТУС ЗАКАЗА (ДЛЯ АДМИНА)
+# ЗАВЕРШЕНИЕ ЗАКАЗА (ДЛЯ АДМИНА)
 # =========================
 
 @dp.callback_query(lambda c: c.data.startswith("complete_"))
@@ -164,6 +162,7 @@ async def complete_order(callback: types.CallbackQuery):
     client_id = int(callback.data.split("_")[1])
     
     try:
+        # Отправляем клиенту
         await bot.send_message(
             chat_id=client_id,
             text="🛵 <b>Отличные новости!</b>\n\nВаш заказ готов. Курьер уже в пути, ожидайте в течение 20 минут.",
@@ -175,10 +174,10 @@ async def complete_order(callback: types.CallbackQuery):
             text=callback.message.text + "\n\n✅ <b>СТАТУС: ЗАВЕРШЕН (Клиент уведомлен)</b>",
             parse_mode="HTML"
         )
-        await callback.answer("Клиент уведомлен о готовности! 🛵", show_alert=False)
+        await callback.answer("Клиент уведомлен! 🛵", show_alert=False)
         
     except Exception as e:
-        await callback.answer(f"Ошибка отправки клиенту: {e}", show_alert=True)
+        await callback.answer(f"Ошибка отправки: {e}", show_alert=True)
 
 # =========================
 # ХЕНДЛЕРЫ: СТАРТ И ЯЗЫК
@@ -195,7 +194,6 @@ async def cmd_start(message: types.Message):
 async def select_language(message: types.Message):
     lang = "ru" if message.text == "🇷🇺 Русский" else "uz"
     user_languages[message.from_user.id] = lang
-    
     await message.answer(TEXTS[lang]["welcome"], reply_markup=get_main_keyboard(lang), parse_mode="HTML")
 
 @dp.message(lambda msg: msg.text in ["🌐 Язык / Til", "🌐 Сменить язык / Tilni o'zgartirish"])
@@ -221,7 +219,6 @@ async def handle_web_app_data(message: types.Message):
             
         webapp_carts[user_id] = items
         total = sum(item['price'] * item['qty'] for item in items)
-        
         items_text = "\n".join([f"• {item['name']} × {item['qty']}" for item in items])
         
         builder = InlineKeyboardBuilder()
@@ -238,7 +235,7 @@ async def handle_web_app_data(message: types.Message):
         )
         
     except Exception as e:
-        logger.error(f"Ошибка WebApp: {e}")
+        logger.error(f"Ошибка парсинга WebApp: {e}")
         await message.answer("Произошла ошибка при обработке заказа. Попробуйте еще раз.")
 
 @dp.callback_query(lambda c: c.data.startswith("web_sauce_"))
@@ -299,20 +296,20 @@ async def handle_comment(message: types.Message):
     await finalize_order(user_id, get_lang(user_id), comment=message.text.strip())
 
 # =========================
-# МЕНЮ И АДРЕС (ДЛЯ КНОПОК)
+# АДРЕС И ЗАГЛУШКИ
 # =========================
 
 @dp.message(lambda msg: msg.text in ["📍 Узнать Адрес", "📍 Manzilni bilish"])
 async def show_address(message: types.Message):
     await message.answer(TEXTS[get_lang(message.from_user.id)]["address"], reply_markup=get_main_keyboard(get_lang(message.from_user.id)))
 
-@dp.message(lambda msg: msg.text in ["🍔 Посмотреть Меню", "🍔 Menyuni ko'rish", "🔙 Назад", "🔙 Orqaga"])
+@dp.message(lambda msg: msg.text in ["🍔 Меню (кнопка ниже)", "🍔 Menyu (pastdagi tugma)", "🔙 Назад", "🔙 Orqaga"])
 async def show_old_menu(message: types.Message):
-    await message.answer("Пожалуйста, нажмите на синюю кнопку 'Сделать заказ' внизу слева для открытия меню.", reply_markup=get_main_keyboard(get_lang(message.from_user.id)))
+    await message.answer("Пожалуйста, нажмите на синюю кнопку внизу слева.", reply_markup=get_main_keyboard(get_lang(message.from_user.id)))
 
 @dp.message()
 async def fallback(message: types.Message):
-    await message.answer("Пожалуйста, нажмите на синюю кнопку 'Сделать заказ' внизу слева, чтобы открыть меню.", reply_markup=get_main_keyboard(get_lang(message.from_user.id)))
+    await message.answer("Нажмите на синюю кнопку 'Сделать заказ' внизу слева, чтобы открыть меню.", reply_markup=get_main_keyboard(get_lang(message.from_user.id)))
 
 @dp.error()
 async def error_handler(event: types.ErrorEvent):
@@ -326,10 +323,12 @@ async def handle_webhook(request: web.Request):
     try:
         update_data = await request.json()
         await dp.feed_update(bot, types.Update(**update_data))
-    except Exception as e: logger.error(f"Ошибка вебхука: {e}")
+    except Exception as e: 
+        logger.error(f"Ошибка вебхука: {e}")
     return web.Response(status=200)
 
-async def healthcheck(request: web.Request): return web.Response(text="Bot is running!")
+async def healthcheck(request: web.Request): 
+    return web.Response(text="Bot is running!")
 
 async def on_startup(app: web.Application):
     webhook_host = os.getenv("RENDER_EXTERNAL_URL") or os.getenv("WEBHOOK_HOST")
@@ -339,9 +338,11 @@ async def on_startup(app: web.Application):
     try:
         await bot.delete_webhook(drop_pending_updates=True)
         await bot.set_webhook(webhook_url)
-    except Exception as e: logger.error(f"Ошибка при старте: {e}")
+    except Exception as e: 
+        logger.error(f"Ошибка при старте: {e}")
 
-async def on_shutdown(app: web.Application): await bot.session.close()
+async def on_shutdown(app: web.Application): 
+    await bot.session.close()
 
 if __name__ == "__main__":
     logger.info("🚀 ЗАПУСК...")
