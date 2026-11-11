@@ -24,6 +24,7 @@ except ValueError:
     ADMIN_CHAT_ID = 0
 
 SUPPORT_PHONE = "+998 (90) 931-31-07"
+WEBAPP_URL = "https://samekxada.github.io/my-first-bot/?v=3"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
@@ -36,8 +37,8 @@ dp = Dispatcher()
 
 TEXTS = {
     "ru": {
-        "welcome": "🍔 <b>Добро пожаловать!</b>\n\nЗаказывайте онлайн, мы доставим! 🛵\n\nНажмите на <b>синюю кнопку</b> внизу слева, чтобы открыть меню.",
-        "menu_btn": "🍔 Меню (кнопка ниже)",
+        "welcome": "🍔 <b>Добро пожаловать!</b>\n\nЗаказывайте онлайн, мы доставим! 🛵\n\nНажмите на кнопку <b>«🛍 Сделать заказ»</b> ниже, чтобы открыть меню.",
+        "menu_btn": "🍔 Сделать заказ",
         "addr_btn": "📍 Узнать Адрес",
         "lang_btn": "🌐 Язык / Til",
         "address": "📍 Демо-адрес: Ташкент, Мирабадский район.",
@@ -55,8 +56,8 @@ TEXTS = {
         "sauce_added": "✅ Соус добавлен!"
     },
     "uz": {
-        "welcome": "🍔 <b>Xush kelibsiz!</b>\n\nOnlayn buyurtma bering, biz yetkazib beramiz! 🛵\n\nMenyuni ochish uchun pastdagi <b>ko'k tugmani</b> bosing.",
-        "menu_btn": "🍔 Menyu (pastdagi tugma)",
+        "welcome": "🍔 <b>Xush kelibsiz!</b>\n\nOnlayn buyurtma bering, biz yetkazib beramiz! 🛵\n\nMenyuni ochish uchun pastdagi <b>«🛍 Buyurtma berish»</b> tugmasini bosing.",
+        "menu_btn": "🍔 Buyurtma berish",
         "addr_btn": "📍 Manzilni bilish",
         "lang_btn": "🌐 Язык / Til",
         "address": "📍 Demo-manzil: Toshkent, Mirobod tumani.",
@@ -101,6 +102,13 @@ def build_phone_keyboard(lang):
 
 def get_main_keyboard(lang):
     builder = ReplyKeyboardBuilder()
+    # ВОТ ОНА, ТА САМАЯ КНОПКА WEB_APP, КОТОРАЯ ПЕРЕДАЕТ ДАННЫЕ В БОТА
+    builder.add(
+        types.KeyboardButton(
+            text="🛍 Сделать заказ", 
+            web_app=types.WebAppInfo(url=WEBAPP_URL)
+        )
+    )
     builder.add(types.KeyboardButton(text=TEXTS[lang]["addr_btn"]))
     builder.add(types.KeyboardButton(text=TEXTS[lang]["lang_btn"]))
     builder.adjust(1)
@@ -136,7 +144,6 @@ async def finalize_order(user_id, lang, comment=None):
     notified = False
     if ADMIN_CHAT_ID:
         admin_kb = InlineKeyboardBuilder()
-        # Кнопка завершения заказа
         admin_kb.button(text="✅ Завершить заказ", callback_data=f"complete_{user_id}")
         
         try:
@@ -162,14 +169,12 @@ async def complete_order(callback: types.CallbackQuery):
     client_id = int(callback.data.split("_")[1])
     
     try:
-        # Отправляем клиенту
         await bot.send_message(
             chat_id=client_id,
             text="🛵 <b>Отличные новости!</b>\n\nВаш заказ готов. Курьер уже в пути, ожидайте в течение 20 минут.",
             parse_mode="HTML"
         )
         
-        # Меняем текст на сообщении админа
         await callback.message.edit_text(
             text=callback.message.text + "\n\n✅ <b>СТАТУС: ЗАВЕРШЕН (Клиент уведомлен)</b>",
             parse_mode="HTML"
@@ -208,6 +213,8 @@ async def change_lang(message: types.Message):
 async def handle_web_app_data(message: types.Message):
     user_id = message.from_user.id
     lang = get_lang(user_id)
+    
+    logger.info(f"Получены данные из Web App от {user_id}") # Лог для проверки
     
     try:
         data = json.loads(message.web_app_data.data)
@@ -303,13 +310,14 @@ async def handle_comment(message: types.Message):
 async def show_address(message: types.Message):
     await message.answer(TEXTS[get_lang(message.from_user.id)]["address"], reply_markup=get_main_keyboard(get_lang(message.from_user.id)))
 
-@dp.message(lambda msg: msg.text in ["🍔 Меню (кнопка ниже)", "🍔 Menyu (pastdagi tugma)", "🔙 Назад", "🔙 Orqaga"])
+@dp.message(lambda msg: msg.text in ["🍔 Сделать заказ", "🍔 Buyurtma berish", "🔙 Назад", "🔙 Orqaga"])
 async def show_old_menu(message: types.Message):
-    await message.answer("Пожалуйста, нажмите на синюю кнопку внизу слева.", reply_markup=get_main_keyboard(get_lang(message.from_user.id)))
+    # Это не сработает, так как кнопка теперь типа web_app, но на всякий случай
+    await message.answer("Пожалуйста, нажмите на кнопку '🛍 Сделать заказ' внизу.", reply_markup=get_main_keyboard(get_lang(message.from_user.id)))
 
 @dp.message()
 async def fallback(message: types.Message):
-    await message.answer("Нажмите на синюю кнопку 'Сделать заказ' внизу слева, чтобы открыть меню.", reply_markup=get_main_keyboard(get_lang(message.from_user.id)))
+    await message.answer("Нажмите на кнопку '🛍 Сделать заказ' внизу, чтобы открыть меню.", reply_markup=get_main_keyboard(get_lang(message.from_user.id)))
 
 @dp.error()
 async def error_handler(event: types.ErrorEvent):
