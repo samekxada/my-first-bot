@@ -21,7 +21,8 @@ try: ADMIN_CHAT_ID = int(os.getenv("ADMIN_CHAT_ID", "0"))
 except ValueError: ADMIN_CHAT_ID = 0
 
 SUPPORT_PHONE = "+998 (90) 931-31-07"
-WEBAPP_URL = "https://samekxada.github.io/my-first-bot/?v=4" # Обновил версию на v=4
+# ВАЖНО: Я поменял версию на ?v=5, чтобы Telegram сбросил кэш и загрузил новый HTML
+WEBAPP_URL = "https://samekxada.github.io/my-first-bot/?v=5"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
@@ -34,7 +35,7 @@ dp = Dispatcher()
 
 TEXTS = {
     "ru": {
-        "welcome": "🍔 <b>Добро пожаловать!</b>\n\nНажмите на кнопку <b>«🛍 Сделать заказ»</b> ниже, чтобы открыть меню.",
+        "welcome": "🍔 <b>Добро пожаловать!</b>\n\nЗаказывайте онлайн, мы доставим! 🛵\n\nНажмите на кнопку <b>«🛍 Сделать заказ»</b> ниже, чтобы открыть меню.",
         "addr_btn": "📍 Узнать Адрес",
         "lang_btn": "🌐 Язык / Til",
         "address": "📍 Демо-адрес: Ташкент, Мирабадский район.",
@@ -52,7 +53,7 @@ TEXTS = {
         "ask_sauce": "🥫 Хотите добавить соус к вашему заказу?",
         "sauce_yes": "🥫 Да, выбрать соус",
         "sauce_no": "🙅 Нет, без соуса",
-        "choose_sauce": "Выберите соус (можно несколько):",
+        "choose_sauce": "Выберите соус (можно несколько раз):",
         "sauce_done": "✅ Завершить выбор соусов",
         "sauce_added": "✅ Добавлено!"
     },
@@ -189,13 +190,14 @@ async def change_lang(message: types.Message):
     await cmd_start(message)
 
 # =========================
-# ПРИЕМ ДАННЫХ ИЗ MINI APP И ВЕТКА СОУСОВ
+# ПРИЕМ ДАННЫХ ИЗ MINI APP
 # =========================
 
 @dp.message(lambda msg: msg.web_app_data)
 async def handle_web_app_data(message: types.Message):
     user_id = message.from_user.id
     lang = get_lang(user_id)
+    logger.info(f"Получены данные из Web App: {message.web_app_data.data}")
     
     try:
         data = json.loads(message.web_app_data.data)
@@ -209,7 +211,6 @@ async def handle_web_app_data(message: types.Message):
         total = sum(item['price'] * item['qty'] for item in items)
         items_text = "\n".join([f"• {item['name']} × {item['qty']}" for item in items])
         
-        # ШАГ 1: Спрашиваем, нужен ли соус вообще
         builder = InlineKeyboardBuilder()
         builder.button(text=TEXTS[lang]["sauce_yes"], callback_data="sauce_ask_yes")
         builder.button(text=TEXTS[lang]["sauce_no"], callback_data="sauce_ask_no")
@@ -224,60 +225,48 @@ async def handle_web_app_data(message: types.Message):
         
     except Exception as e:
         logger.error(f"Ошибка WebApp: {e}")
-        await message.answer("Ошибка обработки заказа. Попробуйте снова.")
 
-# ШАГ 2: Если выбрали "С соусом" - показываем 6 соусов
 @dp.callback_query(lambda c: c.data == "sauce_ask_yes")
 async def show_sauces(callback: types.CallbackQuery):
     user_id = callback.from_user.id
     lang = get_lang(user_id)
-    
     await callback.answer()
-    await callback.message.delete() # Удаляем старое сообщение с вопросом
+    await callback.message.delete()
     
     builder = InlineKeyboardBuilder()
     for sauce, price in SAUCES.items():
         builder.button(text=f"{sauce} (+{price:,})", callback_data=f"sauce_add_{sauce}")
-    
     builder.button(text=TEXTS[lang]["sauce_done"], callback_data="sauce_finish")
-    builder.adjust(2, 2, 2, 1) # По 2 соуса в ряд
+    builder.adjust(2, 2, 2, 1) 
     
     await callback.message.answer(TEXTS[lang]["choose_sauce"], reply_markup=builder.as_markup())
 
-# Если выбрали "Без соуса" - сразу запрашиваем контакт
 @dp.callback_query(lambda c: c.data == "sauce_ask_no")
 async def skip_sauces(callback: types.CallbackQuery):
     user_id = callback.from_user.id
     lang = get_lang(user_id)
-    
     await callback.answer()
     await callback.message.delete()
     await ask_phone_webapp(callback.message, user_id, lang)
 
-# Добавление конкретного соуса в корзину
 @dp.callback_query(lambda c: c.data.startswith("sauce_add_"))
 async def add_specific_sauce(callback: types.CallbackQuery):
     sauce_name = callback.data.replace("sauce_add_", "")
     user_id = callback.from_user.id
-    lang = get_lang(user_id)
     
     if user_id in webapp_carts:
         price = SAUCES[sauce_name]
-        # Проверяем, есть ли уже такой соус, чтобы увеличить количество
         existing = next((item for item in webapp_carts[user_id] if item['name'] == sauce_name), None)
         if existing:
             existing['qty'] += 1
         else:
             webapp_carts[user_id].append({"name": sauce_name, "qty": 1, "price": price})
-            
         await callback.answer(f"{sauce_name} добавлен!", show_alert=False)
 
-# Завершение выбора соусов
 @dp.callback_query(lambda c: c.data == "sauce_finish")
 async def finish_sauces(callback: types.CallbackQuery):
     user_id = callback.from_user.id
     lang = get_lang(user_id)
-    
     await callback.answer()
     await callback.message.delete()
     await ask_phone_webapp(callback.message, user_id, lang)
@@ -320,10 +309,6 @@ async def handle_comment(message: types.Message):
     user_id = message.from_user.id
     await finalize_order(user_id, get_lang(user_id), comment=message.text.strip())
 
-# =========================
-# АДРЕС И ЗАГЛУШКИ
-# =========================
-
 @dp.message(lambda msg: msg.text in ["📍 Узнать Адрес", "📍 Manzilni bilish"])
 async def show_address(message: types.Message):
     await message.answer(TEXTS[get_lang(message.from_user.id)]["address"], reply_markup=get_main_keyboard(get_lang(message.from_user.id)))
@@ -337,7 +322,7 @@ async def error_handler(event: types.ErrorEvent):
     logger.error(f"Ошибка: {event.exception}", exc_info=event.exception)
 
 # =========================
-# WEBHOOK И HEALTHCHECK
+# WEBHOOK
 # =========================
 
 async def handle_webhook(request: web.Request):
