@@ -201,25 +201,39 @@
         tg.expand();
         tg.enableClosingConfirmation();
 
+        // ==========================================
+        // ТВОИ КАРТИНКИ С GITHUB
+        // ⚠️ Убедись, что названия файлов совпадают 1 в 1 (и что есть .jpg в конце)
+        // ==========================================
         const IMG_LAVASH = "lavash.jpg"; 
         const IMG_FRIES = "french_fries.jpg";
         const IMG_FUSETEA = "fusetea.jpg";
         const IMG_LIPTON = "lipton.jpg";
+        const IMG_FRIENDS_ALWAYS = "friends_always.jpg";
 
         const products = [
+            // Бургеры (пока с временными картинками)
             { id: 1, cat: "burgers", name: "Классик Бургер", price: 24000, desc: "Сочная котлета и свежие овощи", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=200" },
             { id: 2, cat: "burgers", name: "Чизбургер", price: 28000, desc: "Двойной сыр чеддер", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=200" },
             { id: 3, cat: "burgers", name: "Двойной Чизбургер", price: 38000, desc: "Для очень голодных", img: "https://images.unsplash.com/photo-1586816001966-79b736744398?q=80&w=200" },
             { id: 4, cat: "burgers", name: "Шеф-Бургер", price: 26000, desc: "С куриным филе", img: "https://images.unsplash.com/photo-1594212844822-18d2b66e3724?q=80&w=200" },
+            
+            // Лаваши
             { id: 5, cat: "lavash", name: "Лаваш обычный", price: 25000, desc: "Классический лаваш", img: "https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=200" },
             { id: 6, cat: "lavash", name: "Лаваш сырный", price: 30000, desc: "Хрустящий лаваш с сыром", img: IMG_LAVASH },
+            
+            // Закуски
             { id: 7, cat: "snacks", name: "Картошка фри", price: 15000, desc: "Средняя порция с кетчупом", img: IMG_FRIES },
             { id: 8, cat: "snacks", name: "Наггетсы (6 шт)", price: 18000, desc: "С хрустящей корочкой", img: "https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=200" },
+            
+            // Напитки
             { id: 9, cat: "drinks", name: "Coca-Cola 0.5", price: 7000, desc: "Классика", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=200" },
             { id: 10, cat: "drinks", name: "Fuse Tea 0.5", price: 8000, desc: "Холодный чай с лимоном", img: IMG_FUSETEA },
             { id: 11, cat: "drinks", name: "Lipton 0.5", price: 8000, desc: "Зеленый чай", img: IMG_LIPTON },
+            
+            // Комбо
             { id: 12, cat: "combo", name: "Узбекский пир", price: 75000, desc: "Двойной Шеф-Бургер, фри, Кола 1л", img: "https://images.unsplash.com/photo-1610440042657-612c34d95e9f?q=80&w=200" },
-            { id: 13, cat: "combo", name: "Друзья навсегда", price: 99000, oldPrice: 199000, desc: "3 Чизбургера, фри, наггетсы, Fuse Tea 1.5л", img: "https://images.unsplash.com/photo-1594212844822-18d2b66e3724?q=80&w=200" }
+            { id: 13, cat: "combo", name: "Друзья навсегда", price: 99000, oldPrice: 199000, desc: "3 Чизбургера, фри, наггетсы, Fuse Tea 1.5л", img: IMG_FRIENDS_ALWAYS }
         ];
 
         const categories = [
@@ -363,14 +377,10 @@
             }
 
             try {
-                // Всплывающее окно для диагностики (если заказ не придет, но окно выскочит - значит проблема в боте)
-                tg.showAlert("Отправляем заказ..."); 
-                
                 tg.sendData(JSON.stringify({ action: "new_order", items: itemsArray }));
-                
                 setTimeout(() => {
                     tg.close();
-                }, 800);
+                }, 500);
             } catch (e) {
                 tg.showAlert("Ошибка JS: " + e.message);
                 isSending = false;
