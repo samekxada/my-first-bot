@@ -21,8 +21,8 @@ try: ADMIN_CHAT_ID = int(os.getenv("ADMIN_CHAT_ID", "0"))
 except ValueError: ADMIN_CHAT_ID = 0
 
 SUPPORT_PHONE = "+998 (90) 931-31-07"
-# ВАЖНО: Я поменял версию на ?v=5, чтобы Telegram сбросил кэш и загрузил новый HTML
-WEBAPP_URL = "https://samekxada.github.io/my-first-bot/?v=5"
+# Версия v=8 для сброса кэша в Telegram
+WEBAPP_URL = "https://samekxada.github.io/my-first-bot/?v=8"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
