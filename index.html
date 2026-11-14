@@ -201,30 +201,49 @@
         tg.expand();
         tg.enableClosingConfirmation();
 
-        // ТВОИ КАРТИНКИ С GITHUB (названия должны совпадать 1 в 1)
+        // ==========================================
+        // ФОТОГРАФИИ
+        // ==========================================
+        // 1. Твои локальные файлы (которые ты загрузил на GitHub)
+        const IMG_LAVASH = "lavash.jpg"; 
+        const IMG_FRIES = "french_fries.jpg";
+        const IMG_FUSETEA = "fusetea.jpg";
+        const IMG_LIPTON = "lipton.jpg";
+        const IMG_FRIENDS_ALWAYS = "friends_always.jpg";
+
+        // 2. Красивые фото из интернета для тех позиций, где нет твоих файлов
+        const UNSPLASH_BURGER_CLASSIC = "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=200";
+        const UNSPLASH_BURGER_CHEESE = "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=200";
+        const UNSPLASH_BURGER_DOUBLE = "https://images.unsplash.com/photo-1586816001966-79b736744398?q=80&w=200";
+        const UNSPLASH_BURGER_SHEF = "https://images.unsplash.com/photo-1594212844822-18d2b66e3724?q=80&w=200";
+        const UNSPLASH_LAVASH_PLAIN = "https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=200";
+        const UNSPLASH_NUGGETS = "https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=200";
+        const UNSPLASH_COLA = "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=200";
+        const UNSPLASH_COMBO_PIR = "https://images.unsplash.com/photo-1610440042657-612c34d95e9f?q=80&w=200";
+
         const products = [
-            // Бургеры
-            { id: 1, cat: "burgers", name: "Классик Бургер", price: 24000, desc: "Сочная котлета и свежие овощи", img: "burger_classic.jpg" },
-            { id: 2, cat: "burgers", name: "Чизбургер", price: 28000, desc: "Двойной сыр чеддер", img: "burger_cheese.jpg" },
-            { id: 3, cat: "burgers", name: "Двойной Чизбургер", price: 38000, desc: "Для очень голодных", img: "burger_double.jpg" },
-            { id: 4, cat: "burgers", name: "Шеф-Бургер", price: 26000, desc: "С куриным филе", img: "burger_shef.jpg" },
+            // Бургеры (используем Unsplash)
+            { id: 1, cat: "burgers", name: "Классик Бургер", price: 24000, desc: "Сочная котлета и свежие овощи", img: UNSPLASH_BURGER_CLASSIC },
+            { id: 2, cat: "burgers", name: "Чизбургер", price: 28000, desc: "Двойной сыр чеддер", img: UNSPLASH_BURGER_CHEESE },
+            { id: 3, cat: "burgers", name: "Двойной Чизбургер", price: 38000, desc: "Для очень голодных", img: UNSPLASH_BURGER_DOUBLE },
+            { id: 4, cat: "burgers", name: "Шеф-Бургер", price: 26000, desc: "С куриным филе", img: UNSPLASH_BURGER_SHEF },
             
-            // Лаваши
-            { id: 5, cat: "lavash", name: "Лаваш обычный", price: 25000, desc: "Классический лаваш", img: "lavash_plain.jpg" },
-            { id: 6, cat: "lavash", name: "Лаваш сырный", price: 30000, desc: "Хрустящий лаваш с сыром", img: "lavash_cheese.jpg" },
+            // Лаваши (Обычный - Unsplash, Сырный - твой файл)
+            { id: 5, cat: "lavash", name: "Лаваш обычный", price: 25000, desc: "Классический лаваш", img: UNSPLASH_LAVASH_PLAIN },
+            { id: 6, cat: "lavash", name: "Лаваш сырный", price: 30000, desc: "Хрустящий лаваш с сыром", img: IMG_LAVASH },
             
-            // Закуски
-            { id: 7, cat: "snacks", name: "Картошка фри", price: 15000, desc: "Средняя порция с кетчупом", img: "fries.jpg" },
-            { id: 8, cat: "snacks", name: "Наггетсы (6 шт)", price: 18000, desc: "С хрустящей корочкой", img: "nuggets.jpg" },
+            // Закуски (Фри - твой файл, Наггетсы - Unsplash)
+            { id: 7, cat: "snacks", name: "Картошка фри", price: 15000, desc: "Средняя порция с кетчупом", img: IMG_FRIES },
+            { id: 8, cat: "snacks", name: "Наггетсы (6 шт)", price: 18000, desc: "С хрустящей корочкой", img: UNSPLASH_NUGGETS },
             
-            // Напитки
-            { id: 9, cat: "drinks", name: "Coca-Cola 0.5", price: 7000, desc: "Классика", img: "cola.jpg" },
-            { id: 10, cat: "drinks", name: "Fuse Tea 0.5", price: 8000, desc: "Холодный чай с лимоном", img: "fusetea.jpg" },
-            { id: 11, cat: "drinks", name: "Lipton 0.5", price: 8000, desc: "Зеленый чай", img: "lipton.jpg" },
+            // Напитки (Кола - Unsplash, остальное - твои файлы)
+            { id: 9, cat: "drinks", name: "Coca-Cola 0.5", price: 7000, desc: "Классика", img: UNSPLASH_COLA },
+            { id: 10, cat: "drinks", name: "Fuse Tea 0.5", price: 8000, desc: "Холодный чай с лимоном", img: IMG_FUSETEA },
+            { id: 11, cat: "drinks", name: "Lipton 0.5", price: 8000, desc: "Зеленый чай", img: IMG_LIPTON },
             
-            // Комбо
-            { id: 12, cat: "combo", name: "Узбекский пир", price: 75000, desc: "Двойной Шеф-Бургер, фри, Кола 1л", img: "combo_pir.jpg" },
-            { id: 13, cat: "combo", name: "Друзья навсегда", price: 99000, oldPrice: 199000, desc: "3 Чизбургера, фри, наггетсы, Fuse Tea 1.5л", img: "combo_friends.jpg" }
+            // Комбо (Узбекский пир - Unsplash, Друзья - твой файл)
+            { id: 12, cat: "combo", name: "Узбекский пир", price: 75000, desc: "Двойной Шеф-Бургер, фри, Кола 1л", img: UNSPLASH_COMBO_PIR },
+            { id: 13, cat: "combo", name: "Друзья навсегда", price: 99000, oldPrice: 199000, desc: "3 Чизбургера, фри, наггетсы, Fuse Tea 1.5л", img: IMG_FRIENDS_ALWAYS }
         ];
 
         const categories = [
@@ -284,7 +303,7 @@
                     `;
                 }
                 
-                // Добавлена защита onerror: если картинки нет, покажет серую заглушку
+                // Защита onerror: если картинки нет, покажет серую заглушку
                 div.innerHTML = `
                     <img src="${p.img}" class="card-img" alt="${p.name}" onerror="this.src='https://placehold.co/200x200/eee/999?text=no+photo'">
                     <div class="card-info">
